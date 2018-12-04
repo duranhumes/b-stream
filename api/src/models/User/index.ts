@@ -11,7 +11,7 @@ export const passwordRegex = new RegExp(
 export const passwordValidationMessage =
     'A valid password consists of atleast 1 uppercase letter, 1 special character, 1 number, and is between 8 - 30 characters long.'
 
-@Entity()
+@Entity('users')
 export class User extends Model {
     @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
     @MinLength(3)
@@ -66,7 +66,7 @@ export class User extends Model {
         }
 
         // Skip password validation if password is already hashed and hasn't changed or is empty
-        if (this.password && !this.password.startsWith('$argon2d')) {
+        if (this.password && !this.password.startsWith('$argon2id')) {
             if (validatePassword(this.password)) {
                 const hashedPassword = await hashPassword(this.password)
                 if (hashedPassword) {
