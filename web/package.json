@@ -1,0 +1,67 @@
+{
+    "name": "m-stream-web",
+    "version": "1.0.0",
+    "repository": "git@github.com:duranhumes/m-stream.git",
+    "author": "Duran Humes <duranhumes@gmail.com>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "react-scripts-ts start",
+        "build": "react-scripts-ts build",
+        "test": "react-scripts-ts test --env=jsdom",
+        "eject": "react-scripts-ts eject",
+        "docker": "docker build -t m-stream-web . && docker run -it -d -p 8000:80 m-stream-web",
+        "postinstall": "yarn prettier && yarn lint",
+        "lint": "npx tslint --project tsconfig.json",
+        "lint:fix": "npx tslint --project tsconfig.json --fix",
+        "prettier": "npx prettier --write '**/*.{ts,tsx,js,jsx,json}'"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "*.(ts,tsx,js,jsx,json)": [
+            "yarn prettier",
+            "yarn lint:fix",
+            "git add"
+        ]
+    },
+    "dependencies": {
+        "react": "^16.6.3",
+        "react-dom": "^16.6.3",
+        "react-loadable": "^5.5.0",
+        "react-redux": "^5.1.1",
+        "react-router-dom": "^4.3.1",
+        "react-scripts-ts": "3.1.0",
+        "redux": "^4.0.1",
+        "redux-thunk": "^2.3.0",
+        "styled-components": "^4.1.2"
+    },
+    "devDependencies": {
+        "@types/enzyme": "^3.1.15",
+        "@types/enzyme-adapter-react-16": "^1.0.3",
+        "@types/jest": "^23.3.10",
+        "@types/node": "^10.12.11",
+        "@types/react": "^16.7.11",
+        "@types/react-dom": "^16.0.11",
+        "@types/react-loadable": "^5.4.2",
+        "@types/react-redux": "^6.0.10",
+        "@types/react-router-dom": "^4.3.1",
+        "@types/react-test-renderer": "^16.0.3",
+        "@types/styled-components": "^4.1.2",
+        "cross-env": "^5.2.0",
+        "enzyme": "^3.7.0",
+        "enzyme-adapter-react-16": "^1.7.0",
+        "husky": "^1.2.0",
+        "lint-staged": "^8.1.0",
+        "prettier": "^1.15.3",
+        "react-test-renderer": "^16.6.3",
+        "rimraf": "^2.6.2",
+        "tslint": "^5.11.0",
+        "tslint-config-airbnb": "^5.11.1",
+        "tslint-config-prettier": "^1.17.0",
+        "typescript": "^3.2.1"
+    }
+}
