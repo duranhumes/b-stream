@@ -22,9 +22,7 @@ describe('=> Find one user service <=', () => {
     it('=> should find a user by the given key value pair', async () => {
         const userObj = {
             userName: faker.internet.userName(),
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            email: faker.internet.email(),
+            email: 'email@email.com',
             password: 'My_passwd@12',
         }
         const userId = await create(userObj)

@@ -15,9 +15,7 @@ describe('=> Remove user service <=', () => {
         const [userId, userIdErr]: [any, any] = await promisify(
             create({
                 userName: faker.internet.userName(),
-                firstName: faker.name.firstName(),
-                lastName: faker.name.lastName(),
-                email: faker.internet.email(),
+                email: 'email@email.com',
                 password: 'My_passwd@12',
             })
         )

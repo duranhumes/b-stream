@@ -53,7 +53,13 @@ export class User extends Model {
 
     @BeforeUpdate()
     public async beforeUpdate() {
-        await validateData(this)
+        if (this.password && this.password.startsWith('$argon2id')) {
+            const currentData = {}
+            Object.assign(currentData, this, { password: null })
+            await validateData(currentData)
+        } else {
+            await validateData(this)
+        }
 
         if (this.email) {
             this.email = this.email.toLowerCase()
