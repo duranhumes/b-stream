@@ -22,12 +22,7 @@ export const update: UpdateType = async (
     filter = true,
     fields = []
 ) => {
-    // const manager = getManager()
-    // const userRepository = manager.getRepository(User)
-
-    // Object.assign(user, data)
     const manager = getManager()
-
     const tempUser = new User()
     Object.assign(tempUser, user, {
         ...data,
@@ -36,9 +31,6 @@ export const update: UpdateType = async (
     const [updatedUser, updatedUserErr]: [any, any] = await promisify(
         manager.save(User, tempUser)
     )
-    // const [updatedUser, updatedUserErr] = await promisify(
-    //     userRepository.save(user)
-    // )
     if (updatedUserErr) {
         logger('Update User Service', updatedUserErr, 500)
 
