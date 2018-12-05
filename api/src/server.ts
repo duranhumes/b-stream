@@ -9,7 +9,7 @@ import * as rateLimit from 'express-rate-limit'
 import { controllers } from './controllers'
 import { logger } from './lib/utils/logging'
 import { passportConfig } from './lib/middleware/passport'
-import session from './lib/middleware/session'
+import { session } from './lib/middleware/session'
 
 morgan.token('id', req => req.ip)
 

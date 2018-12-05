@@ -7,7 +7,7 @@ const RedisStore = connectRedis(session)
 const isProduction = process.env.NODE_ENV === 'production'
 const redisClient = redis.createClient(String(process.env.REDIS_CONNECTION))
 
-export default () =>
+export const session = () =>
     session({
         genid: () => uuid(),
         name: String(process.env.REDIS_SESSION_NAME),
