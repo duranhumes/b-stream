@@ -21,9 +21,7 @@ describe('=> Find all user service <=', () => {
         for (let i = 0; i < AMOUNT_OF_USERS; i += 1) {
             await create({
                 userName: `${faker.internet.userName()}dsnad90`,
-                firstName: faker.name.firstName(),
-                lastName: faker.name.lastName(),
-                email: `dsj90${faker.internet.email()}`,
+                email: `coolnewEmail2${i}@gmail.com`,
                 password: 'My_pasdsaswd@12',
             })
         }
@@ -34,6 +32,5 @@ describe('=> Find all user service <=', () => {
         expect(users).to.have.lengthOf(AMOUNT_OF_USERS)
         expect(users![0]).to.haveOwnProperty('email')
         expect(users![0]).to.not.haveOwnProperty('password')
-        expect(users![0]).to.not.haveOwnProperty('__v')
     })
 })

@@ -4,62 +4,33 @@ import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
 import { server } from '../setup'
+import { userServices } from '../../services/UserServices'
+import { promisify } from '../../lib/utils'
 
 chai.use(chaiPromises)
 const expect = chai.expect
 
 const genUserData = () => ({
     userName: `${faker.internet.userName()}w`,
-    firstName: faker.name.firstName(),
-    lastName: faker.name.lastName(),
-    email: `w${faker.internet.email()}`,
+    email: 'myEmail@email.com',
     password: 'My_passwd@12',
 })
+const baseUrl = '/v1/users'
 
 describe('=> API User Endpoint <=', () => {
-    describe('=> me <=', () => {
-        let userObj: any = {}
-        let authToken: any = null
-        beforeEach(async () => {
-            userObj = genUserData()
-            const response = await request(server)
-                .post('/v1/users')
-                .set('Content-Type', 'application/json')
-                .send(userObj)
-
-            authToken = response.header.authorization
-        })
-        it('=> should return the current authenticated user data', async () => {
-            const response = await request(server)
-                .get('/v1/users/me')
-                .set('Content-Type', 'application/json')
-                .set('authorization', authToken)
-
-            expect(response.body.response).to.haveOwnProperty('id')
-            expect(response.body.response).to.haveOwnProperty('email')
-            expect(response.body.response).to.not.haveOwnProperty('password')
-            expect(response.status).to.equal(200)
-        })
-        it('=> should return 401 if not authenticated', async () => {
-            const response = await request(server)
-                .get('/v1/users/me')
-                .set('Content-Type', 'application/json')
-
-            expect(response.status).to.equal(401)
-        })
-    })
     describe('=> createUser <=', () => {
         it('=> should return a new user if valid data is passed', async () => {
             const newUserObj = genUserData()
 
             const response = await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(newUserObj)
 
             expect(response.body.response).to.haveOwnProperty('id')
             expect(response.body.response).to.haveOwnProperty('email')
             expect(response.body.response).to.not.haveOwnProperty('password')
+            expect(response.header['set-cookie'].length).to.equal(1)
             expect(response.status).to.equal(201)
         })
         it('=> should return an error if data is bad', async () => {
@@ -67,7 +38,7 @@ describe('=> API User Endpoint <=', () => {
             newUserObj.password = 'passwd'
 
             const response = await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(newUserObj)
 
@@ -77,19 +48,19 @@ describe('=> API User Endpoint <=', () => {
             const userObj = genUserData()
             // Check password requirements validation
             const response = await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send({ ...userObj, password: 'password' })
 
             expect(response.status).to.equal(422)
 
             delete userObj.userName
-            const respons2 = await request(server)
-                .post('/v1/users')
+            const response2 = await request(server)
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(userObj)
 
-            expect(respons2.status).to.equal(422)
+            expect(response2.status).to.equal(422)
         })
     })
     describe('=> getUser <=', () => {
@@ -98,7 +69,7 @@ describe('=> API User Endpoint <=', () => {
         beforeEach(async () => {
             userObj = genUserData()
             const response = await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(userObj)
 
@@ -106,7 +77,7 @@ describe('=> API User Endpoint <=', () => {
         })
         it('=> should return a user found by ID', async () => {
             const response = await request(server)
-                .get(`/v1/users/${userId}`)
+                .get(`${baseUrl}/${userId}`)
                 .set('Content-Type', 'application/json')
 
             expect(response.body.response).to.haveOwnProperty('id')
@@ -116,7 +87,7 @@ describe('=> API User Endpoint <=', () => {
         })
         it('=> should return 404 if not found', async () => {
             const response = await request(server)
-                .get('/v1/users/some-id-that-doesnt-exist')
+                .get(`${baseUrl}/some-id-that-doesnt-exist`)
                 .set('Content-Type', 'application/json')
 
             expect(response.status).to.equal(404)
@@ -129,14 +100,14 @@ describe('=> API User Endpoint <=', () => {
         })
         it('=> should return an empty array if there are no users', async () => {
             const response = await request(server)
-                .get('/v1/users')
+                .get(baseUrl)
                 .set('Content-Type', 'application/json')
 
             expect(response.body.response).to.eql([])
         })
         it('=> should return an array of users', async () => {
             await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(userObj)
 
@@ -146,12 +117,12 @@ describe('=> API User Endpoint <=', () => {
                 email: `sda90${userObj.email}`,
             }
             await request(server)
-                .post('/v1/users')
+                .post(baseUrl)
                 .set('Content-Type', 'application/json')
                 .send(newUserObj)
 
             const response = await request(server)
-                .get('/v1/users')
+                .get(baseUrl)
                 .set('Content-Type', 'application/json')
 
             expect(response.body.response[0]).to.haveOwnProperty('id')
@@ -162,92 +133,52 @@ describe('=> API User Endpoint <=', () => {
         })
     })
     describe('=> updateUser <=', () => {
-        let userObj: any = {}
-        let authToken: any = null
-        let userId: any = null
-        beforeEach(async () => {
-            userObj = genUserData()
-            const response = await request(server)
-                .post('/v1/users')
-                .set('Content-Type', 'application/json')
-                .send(userObj)
-
-            authToken = response.header.authorization
-            userId = response.body.response.id
-        })
         it('=> should update the user found by the given id with new data from body', async () => {
+            const userObj = genUserData()
+            const [userId] = await promisify(userServices.create(userObj))
+
             const originalUserObj = { ...userObj }
 
-            const newEmail = 'my-email@gmail.com'
+            const newEmail = 'myemail@gmail.com'
             const newUserName = 'my-new-user-name'
 
             userObj.email = newEmail
             userObj.userName = newUserName
 
-            const response = await request(server)
-                .patch(`/v1/users/${userId}`)
+            const response2 = await request(server)
+                .patch(`${baseUrl}/${userId}`)
                 .set('Content-Type', 'application/json')
-                .set('authorization', authToken)
                 .send(userObj)
 
-            expect(response.body.response).to.haveOwnProperty('id')
-            expect(response.body.response).to.haveOwnProperty('email')
-            expect(response.body.response).to.not.haveOwnProperty('password')
-            expect(response.body.response.email).to.equal(newEmail)
-            expect(response.body.response.email).to.not.equal(
+            expect(response2.body.response).to.haveOwnProperty('id')
+            expect(response2.body.response).to.haveOwnProperty('email')
+            expect(response2.body.response).to.not.haveOwnProperty('password')
+            expect(response2.body.response.email).to.equal(newEmail)
+            expect(response2.body.response.email).to.not.equal(
                 originalUserObj.email
             )
-            expect(response.body.response.userName).to.equal(newUserName)
-            expect(response.body.response.userName).to.not.equal(
+            expect(response2.body.response.userName).to.equal(newUserName)
+            expect(response2.body.response.userName).to.not.equal(
                 originalUserObj.userName
             )
-            expect(response.status).to.equal(200)
-        })
-        it('should return 403 if authenticated user id and request id dont match', async () => {
-            const response = await request(server)
-                .patch(`/v1/users/${userId}20`)
-                .set('Content-Type', 'application/json')
-                .set('authorization', authToken)
-                .send(userObj)
-
-            expect(response.status).to.equal(403)
+            expect(response2.status).to.equal(200)
         })
     })
     describe('=> deleteUser <=', () => {
-        let userObj: any = {}
-        let authToken: any = null
-        let userId: any = null
-        beforeEach(async () => {
-            userObj = genUserData()
-            const response = await request(server)
-                .post('/v1/users')
-                .set('Content-Type', 'application/json')
-                .send(userObj)
-
-            authToken = response.header.authorization
-            userId = response.body.response.id
-        })
         it('=> should delete user found by the given id', async () => {
+            const userObj = genUserData()
+            const [userId] = await promisify(userServices.create(userObj))
+
             await request(server)
-                .delete(`/v1/users/${userId}`)
-                .set('Content-Type', 'application/json')
-                .set('authorization', authToken)
-
-            const response = await request(server)
-                .get(`/v1/users/${userId}`)
+                .delete(`${baseUrl}/${userId}`)
                 .set('Content-Type', 'application/json')
 
-            expect(response.body.response).to.eql({})
-            expect(response.status).to.equal(404)
-        })
-        it('should return 403 if authenticated user id and request id dont match', async () => {
-            const response = await request(server)
-                .delete(`/v1/users/${userId}20`)
+            const response2 = await request(server)
+                .get(`${baseUrl}/${userId}`)
                 .set('Content-Type', 'application/json')
-                .set('authorization', authToken)
-                .send(userObj)
 
-            expect(response.status).to.equal(403)
+            expect(response2.body.response).to.eql({})
+            expect(response2.status).to.equal(404)
         })
     })
 })

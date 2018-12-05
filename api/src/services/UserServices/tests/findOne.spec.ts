@@ -20,31 +20,27 @@ describe('=> Find one user service <=', () => {
         expect(userErr!.message.toString()).to.equal('User not found')
     })
     it('=> should find a user by the given key value pair', async () => {
-        const [user, userErr]: [any, any] = await promisify(
-            create({
-                userName: faker.internet.userName(),
-                firstName: faker.name.firstName(),
-                lastName: faker.name.lastName(),
-                email: faker.internet.email(),
-                password: 'My_passwd@12',
-            })
-        )
-        expect(userErr).to.equal(undefined)
+        const userObj = {
+            userName: faker.internet.userName(),
+            firstName: faker.name.firstName(),
+            lastName: faker.name.lastName(),
+            email: faker.internet.email(),
+            password: 'My_passwd@12',
+        }
+        const userId = await create(userObj)
 
         const [foundUser, foundUserErr] = await promisify(
-            findOne('id', user!.id)
+            findOne('id', userId!)
         )
         expect(foundUserErr).to.equal(undefined)
         expect(foundUser).to.haveOwnProperty('email')
         expect(foundUser).to.not.haveOwnProperty('password')
-        expect(foundUser).to.not.haveOwnProperty('__v')
 
         const [foundUser2, foundUser2Err] = await promisify(
-            findOne('email', user.email)
+            findOne('email', userObj.email)
         )
         expect(foundUser2Err).to.equal(undefined)
         expect(foundUser2).to.haveOwnProperty('email')
         expect(foundUser2).to.not.haveOwnProperty('password')
-        expect(foundUser2).to.not.haveOwnProperty('__v')
     })
 })

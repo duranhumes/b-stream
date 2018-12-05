@@ -1,20 +1,23 @@
 import * as chai from 'chai'
 import * as request from 'supertest'
-import * as mongoose from 'mongoose'
 import * as chaiPromises from 'chai-as-promised'
 
 import { server } from './setup'
+import database from '../database'
 
 chai.use(chaiPromises)
 const expect = chai.expect
 
 beforeEach(async () => {
-    await mongoose.connection.dropDatabase()
+    if (!database.isConnected) {
+        await database.openConnection()
+    }
+    await database.clearTables()
 })
 
 after(async () => {
-    await mongoose.connection.dropDatabase()
-    await mongoose.connection.close()
+    await database.clearTables()
+    await database.closeConnection()
     server.close()
     console.log('=> Connections closed')
 })
