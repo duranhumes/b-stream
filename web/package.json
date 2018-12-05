@@ -1,7 +1,7 @@
 {
-    "name": "m-stream-web",
+    "name": "b-stream-web",
     "version": "1.0.0",
-    "repository": "git@github.com:duranhumes/m-stream.git",
+    "repository": "git@github.com:duranhumes/b-stream.git",
     "author": "Duran Humes <duranhumes@gmail.com>",
     "license": "MIT",
     "private": true,
@@ -10,7 +10,7 @@
         "build": "react-scripts-ts build",
         "test": "react-scripts-ts test --env=jsdom",
         "eject": "react-scripts-ts eject",
-        "docker": "docker build -t m-stream-web . && docker run -it -d -p 8000:80 m-stream-web",
+        "docker": "docker build -t b-stream-web . && docker run -it -d -p 8000:80 b-stream-web",
         "postinstall": "yarn prettier && yarn lint",
         "lint": "npx tslint --project tsconfig.json",
         "lint:fix": "npx tslint --project tsconfig.json --fix",

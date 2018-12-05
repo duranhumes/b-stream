@@ -1,7 +1,7 @@
 {
-    "name": "m-stream-api",
+    "name": "b-stream-api",
     "version": "1.0.0",
-    "repository": "git@github.com:duranhumes/m-stream.git",
+    "repository": "git@github.com:duranhumes/b-stream.git",
     "author": "Duran Humes <duranhumes@gmail.com>",
     "license": "MIT",
     "description": "",
