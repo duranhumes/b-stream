@@ -1,14 +1,14 @@
-import * as session from 'express-session'
+import * as expressSession from 'express-session'
 import * as redis from 'redis'
 import * as uuid from 'uuid/v4'
 import * as connectRedis from 'connect-redis'
 
-const RedisStore = connectRedis(session)
+const RedisStore = connectRedis(expressSession)
 const isProduction = process.env.NODE_ENV === 'production'
 const redisClient = redis.createClient(String(process.env.REDIS_CONNECTION))
 
 export const session = () =>
-    session({
+    expressSession({
         genid: () => uuid(),
         name: String(process.env.REDIS_SESSION_NAME),
         secret: String(process.env.REDIS_SESSION_SECRET),
