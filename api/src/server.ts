@@ -61,7 +61,7 @@ class Server {
 
         this.app.use('/v1', router)
 
-        // Only allow JSON requests to server
+        // Only allow specific requests content types to server
         router.use((req, res, next) => {
             const contentType = req.headers['content-type']
             if (req.method !== 'GET') {
@@ -88,6 +88,14 @@ class Server {
             return next()
         })
 
+        router.get(
+            '/health',
+            (_: any, res: express.Response, next: express.NextFunction) => {
+                res.sendStatus(200)
+
+                return next()
+            }
+        )
         router.use('/login', controllers.LoginController)
         router.use('/logout', controllers.LogoutController)
         router.use('/users', controllers.UserController)
