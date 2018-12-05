@@ -7,7 +7,7 @@
     "description": "",
     "main": "build/index.js",
     "scripts": {
-        "test": "cross-env npx mocha -r ts-node/register src/**/*.spec.ts --timeout 10000 --exit",
+        "test": "cross-env NODE_ENV=test npx mocha -r ts-node/register **/*.spec.ts --timeout 10000 --exit",
         "start": "cross-env NODE_ENV=development npx nodemon --exec npx ts-node src/index.ts",
         "build": "npx rimraf build && cross-env npx tsc",
         "prod": "cross-env yarn build && cross-env NODE_ENV=production npx pm2 start ecosystem.config.js --env production",
@@ -15,7 +15,7 @@
         "postinstall": "yarn prettier && yarn lint",
         "lint": "npx tslint --project tsconfig.json",
         "lint:fix": "npx tslint --project tsconfig.json --fix",
-        "prettier": "npx prettier --write 'src/**/*.{ts,js}'"
+        "prettier": "npx prettier --write 'src/**/*.{ts,js,json}'"
     },
     "husky": {
         "hooks": {
@@ -30,7 +30,7 @@
         ]
     },
     "dependencies": {
-        "argon2": "^0.19.3",
+        "argon2": "^0.20.0",
         "axios": "^0.18.0",
         "bunyan": "^2.0.2",
         "bunyan-express-serializer": "^1.0.0",
@@ -77,11 +77,11 @@
         "@types/helmet": "^0.0.42",
         "@types/mocha": "^5.2.5",
         "@types/morgan": "^1.7.35",
-        "@types/node": "^10.12.11",
+        "@types/node": "^10.12.12",
         "@types/passport": "^0.4.7",
         "@types/passport-local": "^1.0.33",
         "@types/redis": "^2.8.8",
-        "@types/supertest": "^2.0.6",
+        "@types/supertest": "^2.0.7",
         "@types/uuid": "^3.4.4",
         "cross-env": "^5.2.0",
         "husky": "^1.2.0",

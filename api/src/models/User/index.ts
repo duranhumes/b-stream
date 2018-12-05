@@ -31,7 +31,6 @@ export class User extends Model {
 
     @BeforeInsert()
     public async beforeInsert() {
-        console.log('bye')
         await validateData(this)
 
         if (this.userName && this.email && this.password) {
@@ -54,8 +53,6 @@ export class User extends Model {
 
     @BeforeUpdate()
     public async beforeUpdate() {
-        console.log('hi')
-        console.table(this)
         await validateData(this)
 
         if (this.email) {
@@ -78,8 +75,6 @@ export class User extends Model {
                 throw new TypeError(passwordValidationMessage)
             }
         }
-
-        console.table(this)
     }
 }
 

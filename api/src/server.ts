@@ -47,7 +47,7 @@ class Server {
         this.app.use(
             cors({
                 credentials: true,
-                origin: '*',
+                origin: String(process.env.WEB_CLIENT_URL),
             })
         )
         passportConfig()

@@ -7,20 +7,19 @@ import { isEmpty, promisify } from '../../lib/utils'
 /**
  * Create a new mongodb user record.
  *
- * @returns {object} new user id
+ * @returns {string} new user id
  */
-type CreateType = (user: object) => Promise<object | null>
-export const create: CreateType = async data => {
+type CreateType = (newUserData: object) => Promise<string | null>
+export const create: CreateType = async newUserData => {
     const manager = getManager()
 
     const tempUser = new User()
-    Object.assign(tempUser, data)
+    Object.assign(tempUser, newUserData)
 
     const [newUser, newUserErr]: [any, any] = await promisify(
         manager.insert(User, tempUser)
     )
     if (newUserErr) {
-        console.log({ newUserErr })
         if (newUserErr.code === 'ER_DUP_ENTRY') {
             return Promise.reject({ code: 409, message: newUserErr.message })
         }
