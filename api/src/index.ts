@@ -37,7 +37,7 @@ export function normalizePort(
     }
 }
 
-httpServer.on(
+process.on(
     'uncaughtException',
     (exception: NodeJS.ErrnoException): void => {
         logger('uncaughtException in index', exception, 500)
@@ -49,11 +49,11 @@ httpServer.on(
     }
 )
 
-httpServer.on(
+process.on(
     'unhandledRejection',
     (reason: any, promise: any): void => {
-        logger('Unhandled Rejection in index', { reason, promise }, 500)
-        console.error('Unhandled Rejection: ', promise, ' reason: ', reason)
+        logger('unhandledRejection in index', { reason, promise }, 500)
+        console.error('unhandledRejection: ', promise, ' reason: ', reason)
         closeDBConnection()
         closeServer()
 
