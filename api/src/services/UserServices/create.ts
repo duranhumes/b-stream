@@ -1,8 +1,8 @@
 import { getManager } from 'typeorm'
 
 import { User } from '../../models'
-import { logger } from '../../lib/utils/logging'
-import { isEmpty, promisify } from '../../lib/utils'
+import { logger } from '../../utils/logging'
+import { isEmpty, promisify } from '../../utils'
 
 /**
  * Create a new mongodb user record.

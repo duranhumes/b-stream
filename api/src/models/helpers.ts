@@ -1,4 +1,4 @@
-import { reject } from '../lib/utils'
+import { reject } from '../utils'
 
 /**
  *

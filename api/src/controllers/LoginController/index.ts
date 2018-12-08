@@ -1,12 +1,12 @@
 import { Router, Response } from 'express'
 
 import Controller from '../Controller'
-import { pick, promisify } from '../../lib/utils'
-import { logger } from '../../lib/utils/logging'
-import { verifyPassword } from '../../lib/auth/password'
+import { pick, promisify } from '../../utils'
+import { logger } from '../../utils/logging'
+import { verifyPassword } from '../../auth/password'
 import { filteredModel } from '../../models/helpers'
 import { userServices } from '../../services/UserServices'
-import * as httpMessages from '../../lib/utils/httpMessages'
+import * as httpMessages from '../../utils/httpMessages'
 import { validationFunc, validationRules } from './validation'
 
 class LoginController extends Controller {

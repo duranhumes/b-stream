@@ -3,7 +3,7 @@ import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
 import { create } from '../create'
-import { promisify } from '../../../lib/utils'
+import { promisify } from '../../../utils'
 
 chai.use(chaiPromises)
 const expect = chai.expect

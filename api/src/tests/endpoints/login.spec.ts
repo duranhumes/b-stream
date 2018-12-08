@@ -4,7 +4,7 @@ import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
 import { userServices } from '../../services/UserServices'
-import { promisify } from '../../lib/utils'
+import { promisify } from '../../utils'
 import { server } from '../setup'
 
 const genUserData = () => ({

@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 
 import Controller from '../Controller'
-import requireLogin from '../../lib/middleware/requireLogin'
+import requireLogin from '../../middleware/requireLogin'
 
 class LogoutController extends Controller {
     public router: Router

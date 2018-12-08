@@ -1,6 +1,6 @@
 import userFactory from '../factories/userFactory'
 import { userServices } from '../../services/UserServices'
-import { promisify } from '../../lib/utils'
+import { promisify } from '../../utils'
 
 export default async function seedUsers(amount: number = 10): Promise<any> {
     const users = userFactory(amount)

@@ -1,13 +1,13 @@
 import { Router, Response, Request } from 'express'
 
 import Controller from '../Controller'
-import requireLogin from '../../lib/middleware/requireLogin'
-import * as httpMessages from '../../lib/utils/httpMessages'
-import { logger } from '../../lib/utils/logging'
+import requireLogin from '../../middleware/requireLogin'
+import * as httpMessages from '../../utils/httpMessages'
+import { logger } from '../../utils/logging'
 import { userServices } from '../../services/UserServices'
 import { validationRules, validationFunc } from './validation'
 import seedUsers from '../../database/seeders/seedUsers'
-import { promisify, pick } from '../../lib/utils'
+import { promisify, pick } from '../../utils'
 import UserSchema from '../../schemas/UserSchema'
 
 class UserController extends Controller {

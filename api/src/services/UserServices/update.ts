@@ -1,8 +1,8 @@
 import { getManager } from 'typeorm'
 
 import { filteredModel } from '../../models/helpers'
-import { logger } from '../../lib/utils/logging'
-import { promisify } from '../../lib/utils'
+import { logger } from '../../utils/logging'
+import { promisify } from '../../utils'
 import { User } from '../../models/User'
 
 /**

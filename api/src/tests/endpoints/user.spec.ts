@@ -5,7 +5,7 @@ import * as faker from 'faker'
 
 import { server } from '../setup'
 import { userServices } from '../../services/UserServices'
-import { promisify } from '../../lib/utils'
+import { promisify } from '../../utils'
 
 chai.use(chaiPromises)
 const expect = chai.expect

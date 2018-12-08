@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { body, param, validationResult, query } from 'express-validator/check'
 
-import { code422 } from '../../lib/utils/httpMessages'
+import { code422 } from '../../utils/httpMessages'
 import { passwordRegex, passwordValidationMessage } from '../../models/User'
 
 export const validationRules = {

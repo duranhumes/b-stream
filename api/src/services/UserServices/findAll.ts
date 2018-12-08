@@ -2,8 +2,8 @@ import { getManager } from 'typeorm'
 
 import { User } from '../../models'
 import { filteredModel } from '../../models/helpers'
-import { logger } from '../../lib/utils/logging'
-import { isEmpty, promisify } from '../../lib/utils'
+import { logger } from '../../utils/logging'
+import { isEmpty, promisify } from '../../utils'
 
 /**
  * Find all users in db
