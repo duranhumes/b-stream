@@ -1,4 +1,1 @@
-export default [
-    'artistId',
-    'trackId',
-]
+export default ['artistId', 'trackId']

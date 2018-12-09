@@ -1,8 +1,1 @@
-export default [
-    'id',
-    'createdAt',
-    'updatedAt',
-    'name',
-    'description',
-    'tracks',
-]
+export default ['id', 'createdAt', 'updatedAt', 'name', 'description', 'tracks']
