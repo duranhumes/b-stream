@@ -42,9 +42,9 @@ export function pick(obj: object, keys: string[]) {
 interface CustomError extends Error {
     code: string | number
 }
-export async function promisify<P, E = CustomError>(
+export async function promisify<E = CustomError>(
     promise: Promise<any>
-): Promise<[P | undefined, undefined | E]> {
+): Promise<[any | undefined, undefined | E]> {
     try {
         return [await promise, undefined]
     } catch (e) {
@@ -67,4 +67,29 @@ export function reject(obj: object, keys: string[]) {
             .filter(k => !keys.includes(k))
             .map(k => ({ [k]: obj[k] }))
     )
+}
+
+/**
+ *
+ * @param {Model} model
+ * @param {array} fields
+ *
+ * @returns An object with all model
+ * properties except fields specified
+ */
+export function filterEntity(model: any, fields?: string[]): object {
+    let fieldsToExclude = ['password']
+    if (fields) {
+        fieldsToExclude = [...fieldsToExclude, ...fields]
+    }
+
+    /**
+     * If model param is an array of models loop through
+     * and return the new array.
+     */
+    if (Array.isArray(model)) {
+        return model.map(m => reject(m, fieldsToExclude))
+    }
+
+    return reject(model, fieldsToExclude)
 }
