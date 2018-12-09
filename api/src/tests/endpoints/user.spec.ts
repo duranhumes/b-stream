@@ -4,7 +4,7 @@ import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
 import { server } from '../setup'
-import { userServices } from '../../services/UserServices'
+import { UserServices } from '../../services/UserServices'
 import { promisify } from '../../utils'
 
 chai.use(chaiPromises)
@@ -135,7 +135,7 @@ describe('=> API User Endpoint <=', () => {
     describe('=> updateUser <=', () => {
         it('=> should update the user found by the given id with new data from body', async () => {
             const userObj = genUserData()
-            const [userId] = await promisify(userServices.create(userObj))
+            const [userId] = await promisify(UserServices.create(userObj))
 
             const originalUserObj = { ...userObj }
 
@@ -167,7 +167,7 @@ describe('=> API User Endpoint <=', () => {
     describe('=> deleteUser <=', () => {
         it('=> should delete user found by the given id', async () => {
             const userObj = genUserData()
-            const [userId] = await promisify(userServices.create(userObj))
+            const [userId] = await promisify(UserServices.create(userObj))
 
             await request(server)
                 .delete(`${baseUrl}/${userId}`)

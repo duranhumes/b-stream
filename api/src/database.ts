@@ -1,8 +1,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { createConnection, ConnectionOptions, Connection } from 'typeorm'
+import * as rimraf from 'rimraf'
 
-import { logger } from './lib/utils/logging'
+import { logger } from './utils/logging'
 
 const isProduction = process.env.NODE_ENV === 'production'
 const isTesting = process.env.NODE_ENV === 'test'
@@ -10,7 +11,6 @@ const database = isTesting
     ? String(process.env.MYSQL_DATABASES_TEST)
     : String(process.env.MYSQL_DATABASES)
 const projectDirBasePath = path.normalize(path.resolve(__dirname, '..'))
-console.log(database)
 
 class Database {
     connectionOptions: ConnectionOptions
@@ -20,14 +20,14 @@ class Database {
         this.connectionOptions = {
             database,
             type: 'mysql',
-            entities: ['src/models/*.ts'],
-            subscribers: ['src/subscribers/*.ts'],
+            entities: ['src/entities/**/index.ts'],
+            subscribers: ['src/subscribers/**/index.ts'],
             migrations: ['src/migrations/*.ts'],
             host: String(process.env.MYSQL_HOST),
             port: Number(process.env.MYSQL_PORT),
             username: String(process.env.MYSQL_ROOT_USER),
             password: String(process.env.MYSQL_PASSWORD),
-            logging: isProduction && isTesting,
+            logging: !isProduction && !isTesting,
             synchronize: true,
         }
         this.connection = new Connection(this.connectionOptions)
@@ -84,27 +84,36 @@ class Database {
      */
     private async genModelSchemas() {
         const schemasDir = `${projectDirBasePath}/src/schemas`
-
-        const entities = this.connection.entityMetadatas
-        for (const entity of entities) {
-            const modelSchema = this.connection.getMetadata(entity.name)
-                .propertiesMap
-
-            const objKeys = Object.keys(modelSchema)
-            const keys = objKeys.map((k: any) => `'${k}'`)
-            const template = `export default [${keys}]`
-
-            const schemaFile = `${schemasDir}/${entity.name}Schema.ts`
-            try {
-                fs.writeFileSync(schemaFile, template)
-
-                console.log(`${entity.name} schema created!`)
-            } catch (err) {
-                console.log(err)
+        rimraf(`${schemasDir}/*`, (err: any) => {
+            if (err) {
+                console.error(err)
 
                 process.exit(0)
             }
-        }
+
+            const entities = this.connection.entityMetadatas
+            for (const entity of entities) {
+                const modelSchema = this.connection.getMetadata(entity.name)
+                    .propertiesMap
+
+                const objKeys = Object.keys(modelSchema)
+                const keys = objKeys.map((k: any) => `\n    '${k}'`)
+                const template = `export default [${keys},\n]\n`
+
+                const fileName =
+                    entity.name.charAt(0).toUpperCase() + entity.name.slice(1)
+                const schemaFile = `${schemasDir}/${fileName}Schema.ts`
+                try {
+                    fs.writeFileSync(schemaFile, template)
+
+                    console.log(`${entity.name} schema created!`)
+                } catch (err) {
+                    console.log(err)
+
+                    process.exit(0)
+                }
+            }
+        })
     }
 }
 

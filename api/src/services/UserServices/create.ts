@@ -1,6 +1,6 @@
 import { getManager } from 'typeorm'
 
-import { User } from '../../models'
+import { User } from '../../entities'
 import { logger } from '../../utils/logging'
 import { isEmpty, promisify } from '../../utils'
 

@@ -1,11 +1,10 @@
 import { Router, Response } from 'express'
 
 import Controller from '../Controller'
-import { pick, promisify } from '../../utils'
+import { pick, promisify, filterEntity } from '../../utils'
 import { logger } from '../../utils/logging'
 import { verifyPassword } from '../../auth/password'
-import { filteredModel } from '../../models/helpers'
-import { userServices } from '../../services/UserServices'
+import { UserServices } from '../../services/UserServices'
 import * as httpMessages from '../../utils/httpMessages'
 import { validationFunc, validationRules } from './validation'
 
@@ -56,7 +55,7 @@ class LoginController extends Controller {
          * otherwise proceed.
          */
         const [user, userErr]: [any, any] = await promisify(
-            userServices.findOne('email', email.toLowerCase(), false)
+            UserServices.findOne('email', email.toLowerCase(), false)
         )
         if (userErr) {
             if (userErr.code === 404) {
@@ -105,7 +104,7 @@ class LoginController extends Controller {
          * verify who the user is in
          * subsequent requests
          */
-        const filteredUserObj: any = filteredModel(user)
+        const filteredUserObj: any = filterEntity(user)
         req.login(filteredUserObj.id, (err: any) => {
             if (err) {
                 logger(req.ip, err, 500)

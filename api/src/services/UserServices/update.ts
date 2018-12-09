@@ -1,9 +1,8 @@
 import { getManager } from 'typeorm'
 
-import { filteredModel } from '../../models/helpers'
 import { logger } from '../../utils/logging'
-import { promisify } from '../../utils'
-import { User } from '../../models/User'
+import { promisify, filterEntity } from '../../utils'
+import { User } from '../../entities'
 
 /**
  * Update user in mongodb
@@ -42,7 +41,7 @@ export const update: UpdateType = async (
     }
 
     if (filter) {
-        return Promise.resolve(filteredModel(updatedUser, fields))
+        return Promise.resolve(filterEntity(updatedUser, fields))
     }
 
     return Promise.resolve(updatedUser)

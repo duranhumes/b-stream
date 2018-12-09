@@ -1,10 +1,9 @@
 import { Router, Response, Request } from 'express'
 
 import Controller from '../Controller'
-import requireLogin from '../../middleware/requireLogin'
 import * as httpMessages from '../../utils/httpMessages'
 import { logger } from '../../utils/logging'
-import { userServices } from '../../services/UserServices'
+import { UserServices } from '../../services/UserServices'
 import { validationRules, validationFunc } from './validation'
 import seedUsers from '../../database/seeders/seedUsers'
 import { promisify, pick } from '../../utils'
@@ -44,14 +43,12 @@ class UserController extends Controller {
             '/:id',
             [...validationRules.updateUser],
             validationFunc,
-            requireLogin,
             this.updateUser
         )
         this.router.delete(
             '/:id',
             [...validationRules.deleteUser],
             validationFunc,
-            requireLogin,
             this.deleteUser
         )
     }
@@ -67,7 +64,7 @@ class UserController extends Controller {
         await seedUsers(amountOfUsers)
 
         const [users, usersErr]: [any, any] = await promisify(
-            userServices.findAll()
+            UserServices.findAll()
         )
         if (usersErr) {
             return res
@@ -96,10 +93,6 @@ class UserController extends Controller {
     private createUser = async (req: any, res: Response): Promise<any> => {
         // Filter sent data based on schema
         const filteredData = pick(req.body, UserSchema)
-
-        /**
-         * Build user object
-         */
         const data = {}
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
@@ -111,7 +104,7 @@ class UserController extends Controller {
          * Create & save new user
          */
         const [userId, userIdErr]: [any, any] = await promisify(
-            userServices.create(filteredData)
+            UserServices.create(filteredData)
         )
 
         if (userIdErr) {
@@ -136,7 +129,7 @@ class UserController extends Controller {
          * Find new user
          */
         const [newUser, newUserErr]: [any, any] = await promisify(
-            userServices.findOne('id', userId)
+            UserServices.findOne('id', userId)
         )
         if (newUserErr) {
             logger(req.ip, newUserErr, 500)
@@ -186,7 +179,7 @@ class UserController extends Controller {
         const userId = this.escapeString(req.params.id)
 
         const [user, userErr] = await promisify(
-            userServices.findOne('id', userId)
+            UserServices.findOne('id', userId)
         )
         if (userErr) {
             if (userErr.code === 404) {
@@ -211,7 +204,7 @@ class UserController extends Controller {
      * Returns an array of users
      */
     private getUsers = async (req: Request, res: Response): Promise<any> => {
-        const [users, usersErr] = await promisify(userServices.findAll())
+        const [users, usersErr] = await promisify(UserServices.findAll())
         if (usersErr) {
             logger(req.ip, usersErr, 500)
 
@@ -232,15 +225,16 @@ class UserController extends Controller {
         /**
          * Check if user can perform this action
          */
-        if (req.user.id !== userId) {
-            return res.status(403).json(httpMessages.code403())
-        }
+        // console.table(req.user)
+        // if (req.user.id !== userId) {
+        //     return res.status(403).json(httpMessages.code403())
+        // }
 
         /**
          * Find user
          */
         const [user, userErr]: [any, any] = await promisify(
-            userServices.findOne('id', userId, false)
+            UserServices.findOne('id', userId, false)
         )
         if (userErr) {
             if (userErr.code === 404) {
@@ -279,7 +273,7 @@ class UserController extends Controller {
          * Save updated user
          */
         const [updatedUser, updatedUserErr]: [any, any] = await promisify(
-            userServices.update(user, data)
+            UserServices.update(user, data)
         )
         if (updatedUserErr) {
             logger(req.ip, updatedUserErr, 500)
@@ -309,15 +303,15 @@ class UserController extends Controller {
         /**
          * Check if user can perform this action
          */
-        if (req.user.id !== userId) {
-            return res.status(403).json(httpMessages.code403())
-        }
+        // if (req.user.id !== userId) {
+        //     return res.status(403).json(httpMessages.code403())
+        // }
 
         /**
          * Find user
          */
         const [user, userErr]: [any, any] = await promisify(
-            userServices.findOne('id', userId, false)
+            UserServices.findOne('id', userId, false)
         )
         if (userErr) {
             if (userErr.code === 404) {
@@ -343,7 +337,7 @@ class UserController extends Controller {
          * Remove user
          */
         const [, deleteUserErr] = await promisify(
-            await userServices.remove(user)
+            await UserServices.remove(userId)
         )
         if (deleteUserErr) {
             logger(req.ip, deleteUserErr, 500)

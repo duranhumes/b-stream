@@ -2,7 +2,7 @@ import { getManager } from 'typeorm'
 
 import { logger } from '../../utils/logging'
 import { promisify } from '../../utils'
-import { User } from '../../models/User'
+import { User } from '../../entities'
 
 /**
  * Remove one user in db by id

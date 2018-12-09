@@ -1,7 +1,6 @@
-import { User } from '../../models'
-import { filteredModel } from '../../models/helpers'
+import { User } from '../../entities'
 import { logger } from '../../utils/logging'
-import { isEmpty, promisify } from '../../utils'
+import { isEmpty, promisify, filterEntity } from '../../utils'
 import { getManager } from 'typeorm'
 
 /**
@@ -37,7 +36,7 @@ export const findOne: FindOneType = async (
     }
 
     if (filter) {
-        return Promise.resolve(filteredModel(user, fields))
+        return Promise.resolve(filterEntity(user, fields))
     }
 
     return Promise.resolve(user)

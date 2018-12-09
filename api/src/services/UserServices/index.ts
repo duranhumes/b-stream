@@ -4,7 +4,7 @@ import { findOne } from './findOne'
 import { create } from './create'
 import { update } from './update'
 
-export const userServices = {
+export const UserServices = {
     remove,
     findAll,
     findOne,

@@ -1,9 +1,8 @@
 import { getManager } from 'typeorm'
 
-import { User } from '../../models'
-import { filteredModel } from '../../models/helpers'
+import { User } from '../../entities'
 import { logger } from '../../utils/logging'
-import { isEmpty, promisify } from '../../utils'
+import { isEmpty, promisify, filterEntity } from '../../utils'
 
 /**
  * Find all users in db
@@ -26,7 +25,7 @@ export const findAll: FindAllType = async (filter = true, fields = []) => {
     }
 
     if (filter) {
-        return Promise.resolve(filteredModel(users, fields))
+        return Promise.resolve(filterEntity(users, fields))
     }
 
     return Promise.resolve(users)

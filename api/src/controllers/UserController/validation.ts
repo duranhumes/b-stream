@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { body, param, validationResult, query } from 'express-validator/check'
 
 import { code422 } from '../../utils/httpMessages'
-import { passwordRegex, passwordValidationMessage } from '../../models/User'
+import { passwordRegex, passwordValidationMessage } from '../../entities/User'
 
 export const validationRules = {
     createUser: [
@@ -19,7 +19,8 @@ export const validationRules = {
             .trim()
             .isEmail()
             .withMessage('is not a valid email address')
-            .escape(),
+            .escape()
+            .normalizeEmail(),
         body('password')
             .not()
             .isEmpty()

@@ -1,16 +1,20 @@
-import 'dotenv/config'
+import 'dotenv-safe/config'
 import 'reflect-metadata'
 import * as http from 'http'
 import * as debug from 'debug'
 
 import server from './server'
 import bootstrap from './bootstrap'
-import { logger } from './lib/utils/logging'
+import { logger } from './utils/logging'
 import database from './database'
 
 debug('express:server')
 
-bootstrap.init().then(() => console.log('Bootstrap done.'))
+bootstrap
+    .init()
+    .then(() =>
+        console.log(`\n=> ${process.env.APP_NAME} is ready for use. <=`)
+    )
 
 const port = normalizePort(process.env.PORT || 8080)
 

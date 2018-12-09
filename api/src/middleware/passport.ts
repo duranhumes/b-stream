@@ -1,7 +1,7 @@
 import * as passport from 'passport'
 import { Strategy as LocalStrategy } from 'passport-local'
 
-import { userServices } from '../services/UserServices'
+import { UserServices } from '../services/UserServices'
 import { logger } from '../utils/logging'
 import { promisify, isEmpty } from '../utils'
 
@@ -9,7 +9,7 @@ export const localLogin = new LocalStrategy(
     { usernameField: 'email' },
     async (email: string, _: any, done: any) => {
         const [user, userErr] = await promisify(
-            userServices.findOne('email', email)
+            UserServices.findOne('email', email)
         )
         if (userErr) {
             logger('Error In Passport Local Login', userErr, 500)
@@ -37,7 +37,7 @@ export const passportConfig = () => {
 
     passport.deserializeUser(async (id, done) => {
         const [user, userErr] = await promisify(
-            userServices.findOne('id', id.toString())
+            UserServices.findOne('id', id.toString())
         )
 
         if (userErr) {

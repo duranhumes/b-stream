@@ -3,7 +3,7 @@ import * as request from 'supertest'
 import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
-import { userServices } from '../../services/UserServices'
+import { UserServices } from '../../services/UserServices'
 import { promisify } from '../../utils'
 import { server } from '../setup'
 
@@ -19,7 +19,7 @@ const expect = chai.expect
 describe('=> API Login Endpoint <=', () => {
     it('=> basicLogin should return user obj along with and cookie header after login', async () => {
         const userObj = genUserData()
-        await promisify(userServices.create(userObj))
+        await promisify(UserServices.create(userObj))
 
         const { email, password } = userObj
         const response = await request(server)
@@ -35,7 +35,7 @@ describe('=> API Login Endpoint <=', () => {
     })
     it('=> basicLogin should return 401 for invalid credentials & 404 for user not found', async () => {
         const userObj = genUserData()
-        await promisify(userServices.create(userObj))
+        await promisify(UserServices.create(userObj))
 
         const { email, password } = userObj
         const response = await request(server)
