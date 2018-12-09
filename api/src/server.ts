@@ -99,6 +99,9 @@ class Server {
         router.use('/login', controllers.LoginController)
         router.use('/logout', controllers.LogoutController)
         router.use('/users', controllers.UserController)
+        router.use('/tracks', controllers.TrackController)
+        router.use('/albums', controllers.AlbumController)
+        router.use('/stream', controllers.StreamController)
 
         // To prevent 404 if using the API in browser
         const noContentUrls = ['/favicon.ico', '/robots.txt']
