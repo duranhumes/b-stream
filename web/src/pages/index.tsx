@@ -1,18 +1,32 @@
 import * as React from 'react'
-import * as Loadable from 'react-loadable'
-import { Route, Switch } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-import NotFound from './NotFound'
+import { startClock, serverRenderClock } from '../store/actions'
+import Examples from '../components/examples'
 
-const Home = Loadable({
-    loader: (): Promise<any> => import('./Home'),
-    loading: () => <p>Loading...</p>,
-    modules: ['home'],
-})
+class Index extends React.Component {
+    static getInitialProps({ reduxStore, req }) {
+        const isServer = !!req
+        reduxStore.dispatch(serverRenderClock(isServer))
 
-export const pages = () => (
-    <Switch>
-        <Route exact={true} path="/" component={Home} />
-        <Route component={NotFound} />
-    </Switch>
-)
+        return {}
+    }
+
+    timer: any
+
+    componentDidMount() {
+        const { dispatch }: any = this.props
+        this.timer = startClock(dispatch)
+        console.log(process.env.APP_NAME)
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.timer)
+    }
+
+    render() {
+        return <Examples />
+    }
+}
+
+export default connect()(Index)
