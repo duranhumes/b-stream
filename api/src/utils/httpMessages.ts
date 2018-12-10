@@ -1,61 +1,89 @@
 export function code500(
-    response = {},
+    error = 'Unknown',
     message = 'Something went wrong please try again.'
 ) {
     return {
-        response,
+        error,
         message,
+        status: 500,
     }
 }
 
 export function code422(
-    response = {},
-    message = 'Required fields are missing.'
+    error = 'Unacceptable data',
+    message = 'The data passed does not meet the reqiurements for this endpoint'
 ) {
     return {
-        response,
+        error,
         message,
+        status: 422,
     }
 }
 
-export function code403(response = {}, message = 'Access Denied.') {
+export function code409(
+    error = 'Duplicate',
+    message = 'Resource already exists'
+) {
     return {
-        response,
+        error,
         message,
+        status: 409,
     }
 }
 
-export function code401(response = {}, message = 'Unauthorized.') {
+export function code403(
+    error = 'Forbbiden',
+    message = 'You cannot perform this action'
+) {
     return {
-        response,
+        error,
         message,
+        status: 403,
     }
 }
 
-export function code404(response = {}, message = 'Resource Not Found.') {
+export function code401(
+    error = 'Unauthorized',
+    message = 'Invalid credentials'
+) {
     return {
-        response,
+        error,
         message,
+        status: 401,
     }
 }
 
-export function code204(response = {}, message = 'Resource Found.') {
+export function code404(
+    error = 'Not Found',
+    message = 'The resource at this endpoint was not found'
+) {
     return {
-        response,
+        error,
         message,
+        status: 404,
     }
 }
 
-export function code200(response = {}, message = 'Success.') {
+export function code204(response = {}, message = 'Resource found') {
     return {
         response,
         message,
+        status: 204,
     }
 }
 
-export function code409(response = {}, message = 'User already exists.') {
+export function code200(response = {}, message = 'Success') {
     return {
         response,
         message,
+        status: 200,
+    }
+}
+
+export function code201(response = {}, message = 'Created') {
+    return {
+        response,
+        message,
+        status: 201,
     }
 }

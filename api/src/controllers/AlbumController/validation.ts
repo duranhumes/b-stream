@@ -26,7 +26,7 @@ export function validationFunc(
             .map((err: any) => `${err.param}: ${err.msg}`)
             .join(', ')
 
-        return res.status(422).json(code422({}, errString))
+        return res.status(422).json(code422(undefined, errString))
     }
 
     return next()

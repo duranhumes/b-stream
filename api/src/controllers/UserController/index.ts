@@ -59,7 +59,7 @@ class UserController extends Controller {
      * @field {number} amount of users to create
      */
     private seeder = async (req: Request, res: Response): Promise<any> => {
-        const amountOfUsers = Number(this.escapeString(req.query.amount))
+        const amountOfUsers = Number(this.escapeString(req.query.amount).trim())
 
         await seedUsers(amountOfUsers)
 
@@ -67,9 +67,13 @@ class UserController extends Controller {
             UserServices.findAll()
         )
         if (usersErr) {
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, usersErr.message))
+            logger(req.ip, usersErr, 500)
+
+            return res.status(500).json({
+                status: 500,
+                error: 'Unknown',
+                message: 'Something went wrong, please try again',
+            })
         }
 
         const existingUsersCount = users.length
@@ -86,6 +90,7 @@ class UserController extends Controller {
 
     /**
      * Creates a user with required fields
+     *
      * @field userName
      * @field email
      * @field password
@@ -116,9 +121,7 @@ class UserController extends Controller {
 
             logger(req.ip, userIdErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, userIdErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!userId) {
@@ -134,9 +137,7 @@ class UserController extends Controller {
         if (newUserErr) {
             logger(req.ip, newUserErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, newUserErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!newUser) {
@@ -153,9 +154,7 @@ class UserController extends Controller {
             if (err) {
                 logger(req.ip, err, 500)
 
-                return res
-                    .status(500)
-                    .json(httpMessages.code500({}, err.message))
+                return res.status(500).json(httpMessages.code500())
             }
 
             // Return user obj
@@ -166,7 +165,7 @@ class UserController extends Controller {
             req.session!.user = newUser.id
 
             res.set('X-USER-TOKEN', req.sessionID)
-            return res.status(201).json(httpMessages.code200(response))
+            return res.status(201).json(httpMessages.code201(response))
         })
 
         return
@@ -176,7 +175,7 @@ class UserController extends Controller {
      * Returns a single user object
      */
     private getUser = async (req: Request, res: Response): Promise<any> => {
-        const userId = this.escapeString(req.params.id)
+        const userId = this.escapeString(req.params.id).trim()
 
         const [user, userErr] = await promisify(
             UserServices.findOne('id', userId)
@@ -185,16 +184,12 @@ class UserController extends Controller {
             if (userErr.code === 404) {
                 logger(req.ip, userErr, 404)
 
-                return res
-                    .status(404)
-                    .json(httpMessages.code404({}, userErr.message))
+                return res.status(404).json(httpMessages.code404())
             }
 
             logger(req.ip, userErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, userErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         return res.status(200).json(httpMessages.code200(user))
@@ -208,9 +203,7 @@ class UserController extends Controller {
         if (usersErr) {
             logger(req.ip, usersErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, usersErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         return res.status(200).json(httpMessages.code200(users))
@@ -220,7 +213,7 @@ class UserController extends Controller {
      * Updates a user
      */
     private updateUser = async (req: any, res: Response): Promise<any> => {
-        const userId = this.escapeString(req.params.id)
+        const userId = this.escapeString(req.params.id).trim()
 
         /**
          * Check if user can perform this action
@@ -240,16 +233,12 @@ class UserController extends Controller {
             if (userErr.code === 404) {
                 logger(req.ip, userErr, 404)
 
-                return res
-                    .status(404)
-                    .json(httpMessages.code404({}, userErr.message))
+                return res.status(404).json(httpMessages.code404())
             }
 
             logger(req.ip, userErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, userErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!user) {
@@ -278,9 +267,7 @@ class UserController extends Controller {
         if (updatedUserErr) {
             logger(req.ip, updatedUserErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, updatedUserErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!updatedUser) {
@@ -298,7 +285,7 @@ class UserController extends Controller {
      * Deletes user found by id
      */
     private deleteUser = async (req: Request, res: Response): Promise<any> => {
-        const userId = this.escapeString(req.params.id)
+        const userId = this.escapeString(req.params.id).trim()
 
         /**
          * Check if user can perform this action
@@ -317,16 +304,12 @@ class UserController extends Controller {
             if (userErr.code === 404) {
                 logger(req.ip, userErr, 404)
 
-                return res
-                    .status(404)
-                    .json(httpMessages.code404({}, userErr.message))
+                return res.status(404).json(httpMessages.code404())
             }
 
             logger(req.ip, userErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, userErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!user) {
@@ -342,9 +325,7 @@ class UserController extends Controller {
         if (deleteUserErr) {
             logger(req.ip, deleteUserErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, deleteUserErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         return res.status(200).json(httpMessages.code200({}))

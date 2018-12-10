@@ -61,16 +61,12 @@ class LoginController extends Controller {
             if (userErr.code === 404) {
                 logger(req.ip, userErr, 404)
 
-                return res
-                    .status(404)
-                    .json(httpMessages.code404({}, userErr.message))
+                return res.status(404).json(httpMessages.code404())
             }
 
             logger(req.ip, userErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, userErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!user) {
@@ -87,15 +83,11 @@ class LoginController extends Controller {
         if (verifiedErr) {
             logger(req.ip, verifiedErr, 500)
 
-            return res
-                .status(500)
-                .json(httpMessages.code500({}, verifiedErr.message))
+            return res.status(500).json(httpMessages.code500())
         }
 
         if (!verified) {
-            return res
-                .status(401)
-                .json(httpMessages.code401({}, 'Invalid credentials.'))
+            return res.status(401).json(httpMessages.code401())
         }
 
         /**
@@ -109,9 +101,7 @@ class LoginController extends Controller {
             if (err) {
                 logger(req.ip, err, 500)
 
-                return res
-                    .status(500)
-                    .json(httpMessages.code500({}, err.message))
+                return res.status(500).json(httpMessages.code500())
             }
 
             const response = {
