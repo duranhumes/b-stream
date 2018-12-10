@@ -5,6 +5,7 @@ export default [
     'name',
     'description',
     'fileName',
+    'fileSize',
     'fileExt',
     'duration',
     'timesPlayed',

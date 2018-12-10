@@ -93,3 +93,18 @@ export function filterEntity(model: any, fields?: string[]): object {
 
     return reject(model, fieldsToExclude)
 }
+
+/**
+ * Converts a long string of bytes into a readable format e.g KB, MB, GB, TB, YB
+ *
+ * @param {number} bytes The number of bytes.
+ *
+ * @returns string with formatted size
+ */
+export function readableBytes(bytes: number): string {
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    const convertedBytes = Number((bytes / Math.pow(1024, i)).toFixed(2)) * 1
+
+    return `${convertedBytes}${sizes[i]}`
+}

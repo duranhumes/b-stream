@@ -7,5 +7,6 @@ export default [
     'password',
     'website',
     'websiteTitle',
+    'isConfirmed',
     'tracks',
 ]

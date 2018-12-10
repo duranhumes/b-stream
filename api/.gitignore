@@ -17,3 +17,5 @@ data/
 build/
 storage/
 **/storage
+temp/
+**/temp
