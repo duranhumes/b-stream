@@ -9,8 +9,8 @@ import { isEmpty, promisify } from '../../utils'
  *
  * @returns {string} new user id
  */
-type UploadTrack = (newTrackData: Partial<Track>) => Promise<string | null>
-export const upload: UploadTrack = async newTrackData => {
+type CreateTrack = (newTrackData: Partial<Track>) => Promise<string | null>
+export const create: CreateTrack = async newTrackData => {
     const manager = getManager()
 
     const tempTrack = new Track()

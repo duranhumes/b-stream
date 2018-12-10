@@ -8,6 +8,7 @@ const projectDirBasePath = path.normalize(path.resolve(__dirname, '..'))
 class Bootstrap {
     public async init() {
         this.createStorageDir()
+        this.createTempDir()
         this.createLogsDir()
 
         fs.closeSync(0)
@@ -19,6 +20,13 @@ class Bootstrap {
         const storageDir = `${projectDirBasePath}/storage`
         if (!fs.existsSync(storageDir)) {
             fs.mkdirSync(storageDir)
+        }
+    }
+
+    private createTempDir() {
+        const tempDir = `${projectDirBasePath}/temp`
+        if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir)
         }
     }
 

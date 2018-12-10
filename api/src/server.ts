@@ -5,6 +5,8 @@ import * as helmet from 'helmet'
 import * as cors from 'cors'
 import * as passport from 'passport'
 import * as rateLimit from 'express-rate-limit'
+import * as busboy from 'connect-busboy'
+import * as busboyBodyParser from 'busboy-body-parser'
 
 import { controllers } from './controllers'
 import { logger } from './utils/logging'
@@ -34,8 +36,18 @@ class Server {
         )
         this.app.disable('x-powered-by')
         this.app.use(helmet())
-        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }))
-        this.app.use(express.json({ limit: '50mb' }))
+        this.app.use(
+            busboy({
+                immediate: true,
+                highWaterMark: 2 * 1024 * 1024, // 2mb
+                limits: {
+                    fileSize: 10 * 1024 * 1024, // 10mb
+                },
+            })
+        )
+        this.app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+        this.app.use(express.json({ limit: '10mb' }))
+        this.app.use(busboyBodyParser())
         this.app.use(compression())
         const loggerFormat =
             ':id [:date[web]] ":method :url" :status :response-time'
@@ -71,14 +83,14 @@ class Server {
                     'application/x-www-form-urlencoded',
                 ]
                 const contentTypeMatches = contentType
-                    ? allowedContentTypes.filter(s => s.includes(contentType))
+                    ? allowedContentTypes.filter(s => contentType.includes(s))
                     : []
                 if (!contentType || contentTypeMatches.length === 0) {
                     logger(req.ip, req.statusMessage, req.statusCode)
 
                     return res.status(406).json({
-                        response: {},
-                        message: `This API only accepts ${allowedContentTypes.join(
+                        status: 406,
+                        error: `This API only accepts ${allowedContentTypes.join(
                             ', '
                         )} content types for everything except GET requests.`,
                     })

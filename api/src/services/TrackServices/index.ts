@@ -1,7 +1,11 @@
-import { upload } from './upload'
+import { create } from './create'
 import { findOne } from './findOne'
+import { createTempTrack } from './createTempTrack'
+import { createPermTrack } from './createPermTrack'
 
 export const TrackServices = {
-    upload,
+    create,
     findOne,
+    createTempTrack,
+    createPermTrack,
 }
