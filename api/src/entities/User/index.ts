@@ -1,8 +1,13 @@
-import { Entity, Column, BeforeInsert, BeforeUpdate, OneToMany } from 'typeorm'
-import { IsEmail, MinLength, MaxLength, validate, IsUrl } from 'class-validator'
+import { Entity, Column, OneToMany } from 'typeorm'
+import {
+    IsEmail,
+    IsFQDN,
+    IsLowercase,
+    Length,
+    IsOptional,
+} from 'class-validator'
 
 import { Model } from '../Model'
-import { hashPassword } from '../../auth/password'
 import { Track } from '../Track'
 
 export const passwordRegex = new RegExp(
@@ -15,97 +20,33 @@ export const passwordValidationMessage =
 @Entity('user')
 export class User extends Model {
     @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
-    @MinLength(3)
-    @MaxLength(255)
+    @IsLowercase()
+    @Length(3, 255)
     public userName: string | undefined
 
     @Column({ type: 'varchar', length: 255, unique: true, nullable: false })
     @IsEmail()
-    @MinLength(5)
-    @MaxLength(255)
+    @IsLowercase()
+    @Length(5, 255)
     public email: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: false })
-    @MinLength(8)
-    @MaxLength(30)
+    @Length(8, 30)
     public password: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
-    @IsUrl()
+    @IsFQDN()
+    @IsOptional()
     public website: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
+    @IsOptional()
     public websiteTitle: string | undefined
+
+    @Column({ type: 'tinyint', width: 1, nullable: false, default: 0 })
+    @IsOptional()
+    public isConfirmed: boolean | undefined
 
     @OneToMany(() => Track, track => track.user)
     public tracks: Track[] | undefined
-
-    @BeforeInsert()
-    public async beforeInsert() {
-        await validateData(this)
-
-        if (this.userName && this.email && this.password) {
-            this.userName = this.userName.replace(/\s+/g, '-').toLowerCase()
-            this.email = this.email.toLowerCase()
-            if (this.password !== String(process.env.DEFAULT_OAUTH_PASSWORD)) {
-                if (validatePassword(this.password)) {
-                    const hashedPassword = await hashPassword(this.password)
-                    if (hashedPassword) {
-                        this.password = hashedPassword
-                    } else {
-                        throw new Error('In password hash.')
-                    }
-                } else {
-                    throw new TypeError(passwordValidationMessage)
-                }
-            }
-        }
-    }
-
-    @BeforeUpdate()
-    public async beforeUpdate() {
-        if (this.password && this.password.startsWith('$argon2id')) {
-            const currentData = {}
-            Object.assign(currentData, this, { password: null })
-            await validateData(currentData)
-        } else {
-            await validateData(this)
-        }
-
-        if (this.email) {
-            this.email = this.email.toLowerCase()
-        }
-        if (this.userName) {
-            this.userName = this.userName.replace(/\s+/g, '-').toLowerCase()
-        }
-
-        // Skip password validation if password is already hashed and hasn't changed or is empty
-        if (this.password && !this.password.startsWith('$argon2id')) {
-            if (validatePassword(this.password)) {
-                const hashedPassword = await hashPassword(this.password)
-                if (hashedPassword) {
-                    this.password = hashedPassword
-                } else {
-                    throw new Error('In password hash.')
-                }
-            } else {
-                throw new TypeError(passwordValidationMessage)
-            }
-        }
-    }
-}
-
-async function validateData(data: Partial<User>) {
-    try {
-        const errors = await validate(data)
-        if (errors.length > 0) {
-            throw new TypeError(errors.toString())
-        }
-    } catch (err) {
-        throw new Error(err.toString())
-    }
-}
-
-function validatePassword(password: string) {
-    return passwordRegex.test(password)
 }

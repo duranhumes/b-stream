@@ -7,46 +7,46 @@ import {
 } from 'typeorm'
 import { validate } from 'class-validator'
 
-import { Album } from '../../entities'
+import { Genre } from '../../entities'
 
 @EventSubscriber()
-export class AlbumSubscriber implements EntitySubscriberInterface<Album> {
-    async beforeInsert(event: InsertEvent<Album>) {
+export class GenreSubscriber implements EntitySubscriberInterface<Genre> {
+    async beforeInsert(event: InsertEvent<Genre>) {
         await validateData(event.entity)
     }
 
-    async beforeUpdate(event: UpdateEvent<Album>) {
+    async beforeUpdate(event: UpdateEvent<Genre>) {
         await validateData(event.entity)
     }
 
-    beforeRemove(event: RemoveEvent<Album>) {
+    beforeRemove(event: RemoveEvent<Genre>) {
         console.log(
             `BEFORE ENTITY WITH ID ${event.entityId} REMOVED: `,
             event.entity
         )
     }
 
-    afterInsert(event: InsertEvent<Album>) {
+    afterInsert(event: InsertEvent<Genre>) {
         console.log(`AFTER ENTITY INSERTED: `, event.entity)
     }
 
-    afterUpdate(event: UpdateEvent<Album>) {
+    afterUpdate(event: UpdateEvent<Genre>) {
         console.log(`AFTER ENTITY UPDATED: `, event.entity)
     }
 
-    afterRemove(event: RemoveEvent<Album>) {
+    afterRemove(event: RemoveEvent<Genre>) {
         console.log(
             `AFTER ENTITY WITH ID ${event.entityId} REMOVED: `,
             event.entity
         )
     }
 
-    afterLoad(entity: Album) {
+    afterLoad(entity: Genre) {
         console.log(`AFTER ENTITY LOADED: `, entity)
     }
 }
 
-async function validateData(data: Partial<Album>) {
+async function validateData(data: Partial<Genre>) {
     try {
         const errors = await validate(data, { skipMissingProperties: true })
         if (errors.length > 0) {

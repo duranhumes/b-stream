@@ -1,11 +1,13 @@
 import {
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     UpdateDateColumn,
     CreateDateColumn,
+    BeforeInsert,
 } from 'typeorm'
+import * as uuid from 'uuid/v4'
 
 export abstract class Model {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryColumn('uuid')
     public id: string | undefined
 
     @CreateDateColumn({ nullable: false })
@@ -13,4 +15,9 @@ export abstract class Model {
 
     @UpdateDateColumn({ nullable: false })
     public updatedAt: string | undefined
+
+    @BeforeInsert()
+    beforeInsert() {
+        this.id = uuid().replace(/[^a-z0-9]/gi, '')
+    }
 }
