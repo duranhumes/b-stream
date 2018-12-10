@@ -20,7 +20,7 @@ RUN ls -la
 RUN apk update && apk --no-cache add \
     --virtual native-deps g++ gcc libgcc \
     libstdc++ linux-headers make python build-base \
-    yarn && npm install --global --quiet node-gyp npm yarn
+    ffmpeg && npm install --global --quiet node-gyp npm yarn
 
 RUN yarn install
 
