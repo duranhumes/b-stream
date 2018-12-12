@@ -328,7 +328,7 @@ class UserController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        return res.status(200).json(httpMessages.code200({}))
+        return res.status(204).json(httpMessages.code204({}))
     }
 }
 
