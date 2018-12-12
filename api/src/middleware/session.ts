@@ -3,9 +3,17 @@ import * as redis from 'redis'
 import * as uuid from 'uuid/v4'
 import * as connectRedis from 'connect-redis'
 
+import { logger } from '../utils/logging'
+
 const RedisStore = connectRedis(expressSession)
 const isProduction = process.env.NODE_ENV === 'production'
 const redisClient = redis.createClient(String(process.env.REDIS_CONNECTION))
+redisClient.on('error', err => {
+    logger('Redis Error', err, 500)
+    console.error(err)
+
+    process.exit(1)
+})
 
 export const session = () =>
     expressSession({
