@@ -69,11 +69,7 @@ class UserController extends Controller {
         if (usersErr) {
             logger(req.ip, usersErr, 500)
 
-            return res.status(500).json({
-                status: 500,
-                error: 'Unknown',
-                message: 'Something went wrong, please try again',
-            })
+            return res.status(500).json(httpMessages.code500())
         }
 
         const existingUsersCount = users.length

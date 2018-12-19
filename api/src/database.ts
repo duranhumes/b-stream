@@ -37,7 +37,7 @@ class Database {
         await this.openConnection()
         await this.genModelSchemas()
 
-        console.log('DB successfully connected')
+        console.info('=> DB successfully connected')
     }
 
     public get isConnected() {
@@ -97,7 +97,7 @@ class Database {
                     .propertiesMap
 
                 const objKeys = Object.keys(modelSchema)
-                const keys = objKeys.map((k: any) => `\n    '${k}'`)
+                const keys = objKeys.map((k: string) => `\n    '${k}'`)
                 const template = `export default [${keys},\n]\n`
 
                 const fileName =
@@ -106,7 +106,7 @@ class Database {
                 try {
                     fs.writeFileSync(schemaFile, template)
 
-                    console.log(`${entity.name} schema created!`)
+                    console.info(`${entity.name} schema created!`)
                 } catch (err) {
                     console.log(err)
 

@@ -10,22 +10,21 @@ import database from './database'
 
 debug('express:server')
 
+const port = normalizePort(process.env.PORT || 8080)
+server.set('port', port)
+
 bootstrap
     .init()
     .then(() =>
-        console.log(`\n=> ${process.env.APP_NAME} is ready for use. <=`)
+        console.info(
+            `\n=> ${process.env.APP_NAME} is ready for use on port ${port} <=`
+        )
     )
-
-const port = normalizePort(process.env.PORT || 8080)
-
-server.set('port', port)
 
 const httpServer = http.createServer(server)
 httpServer.listen(port)
 httpServer.on('error', onError)
 httpServer.on('listening', onListening)
-
-console.log(`Server Listening on port ${port}`)
 
 export function normalizePort(
     value: number | string

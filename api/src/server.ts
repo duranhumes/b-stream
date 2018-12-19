@@ -18,7 +18,7 @@ morgan.token('id', req => req.ip)
 class Server {
     public app: express.Application
 
-    public constructor() {
+    constructor() {
         this.app = express()
         this.config()
         this.routes()
@@ -90,7 +90,8 @@ class Server {
 
                     return res.status(406).json({
                         status: 406,
-                        error: `This API only accepts ${allowedContentTypes.join(
+                        error: 'Bad Content-Type Header',
+                        message: `This API only accepts ${allowedContentTypes.join(
                             ', '
                         )} content types for everything except GET requests.`,
                     })
