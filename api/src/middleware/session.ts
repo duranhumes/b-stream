@@ -37,7 +37,7 @@ export const session = () =>
                 Date.now() + Number(process.env.REDIS_SESSION_EXPIRE)
             ),
             maxAge: Number(process.env.REDIS_SESSION_EXPIRE),
-            domain: String(process.env.WEB_CLIENT_URL),
+            // domain: String(process.env.WEB_CLIENT_URL),
             sameSite: true,
         },
         unset: 'destroy',
