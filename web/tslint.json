@@ -9,7 +9,9 @@
         "exclude": [
             "config/**/*.js",
             "node_modules/**/*.ts",
-            "coverage/lcov-report/*.js"
+            "coverage/lcov-report/*.js",
+            "jest.config.js",
+            "next.config.js"
         ]
     },
     "rules": {

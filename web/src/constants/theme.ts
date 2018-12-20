@@ -42,6 +42,8 @@ const color = {
     greenLight: '#66bb6a',
     greenLighter: '#81c784',
     greenLightest: '#a5d6a7',
+
+    facebookBlue: '#4267B2',
 }
 
 const theme = {
