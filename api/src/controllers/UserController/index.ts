@@ -63,9 +63,7 @@ class UserController extends Controller {
 
         await seedUsers(amountOfUsers)
 
-        const [users, usersErr]: [any, any] = await promisify(
-            UserServices.findAll()
-        )
+        const [users, usersErr] = await promisify(UserServices.findAll())
         if (usersErr) {
             logger(req.ip, usersErr, 500)
 
@@ -104,7 +102,7 @@ class UserController extends Controller {
         /**
          * Create & save new user
          */
-        const [userId, userIdErr]: [any, any] = await promisify(
+        const [userId, userIdErr] = await promisify(
             UserServices.create(filteredData)
         )
 
@@ -127,7 +125,7 @@ class UserController extends Controller {
         /**
          * Find new user
          */
-        const [newUser, newUserErr]: [any, any] = await promisify(
+        const [newUser, newUserErr] = await promisify(
             UserServices.findOne('id', userId)
         )
         if (newUserErr) {
@@ -160,7 +158,7 @@ class UserController extends Controller {
 
             req.session!.user = newUser.id
 
-            res.set('X-USER-TOKEN', req.sessionID)
+            res.setHeader('XSRF-TOKEN', req.sessionID)
             return res.status(201).json(httpMessages.code201(response))
         })
 
@@ -222,7 +220,7 @@ class UserController extends Controller {
         /**
          * Find user
          */
-        const [user, userErr]: [any, any] = await promisify(
+        const [user, userErr] = await promisify(
             UserServices.findOne('id', userId, false)
         )
         if (userErr) {
@@ -257,7 +255,7 @@ class UserController extends Controller {
         /**
          * Save updated user
          */
-        const [updatedUser, updatedUserErr]: [any, any] = await promisify(
+        const [updatedUser, updatedUserErr] = await promisify(
             UserServices.update(user, data)
         )
         if (updatedUserErr) {
@@ -293,7 +291,7 @@ class UserController extends Controller {
         /**
          * Find user
          */
-        const [user, userErr]: [any, any] = await promisify(
+        const [user, userErr] = await promisify(
             UserServices.findOne('id', userId, false)
         )
         if (userErr) {

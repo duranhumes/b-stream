@@ -31,12 +31,7 @@ class TrackController extends Controller {
             validationFunc,
             this.getTrack
         )
-        this.router.post(
-            '/',
-            [...validationRules.getTrack],
-            validationFunc,
-            this.uploadTrack
-        )
+        this.router.post('/', this.uploadTrack)
     }
 
     private getTrack = async (req: Request, res: Response): Promise<any> => {
@@ -113,7 +108,7 @@ class TrackController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        const [, permTrackErr] = await promisify(
+        const [permTrack, permTrackErr] = await promisify(
             TrackServices.createPermTrack(tempTrack)
         )
         if (permTrackErr) {
@@ -126,6 +121,10 @@ class TrackController extends Controller {
             ...textFields,
             ...tempTrack,
         }
+
+        console.log(permTrack)
+        console.log(trackData)
+        return res.sendStatus(201)
 
         const [newTrackId, newTrackIdErr] = await promisify(
             TrackServices.create(trackData)

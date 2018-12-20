@@ -110,7 +110,7 @@ class LoginController extends Controller {
 
             req.session!.user = filteredUserObj.id
 
-            res.set('X-USER-TOKEN', req.sessionID)
+            res.setHeader('XSRF-TOKEN', req.sessionID)
             return res.status(200).json(httpMessages.code200(response))
         })
 

@@ -11,11 +11,13 @@ export function code500(
 
 export function code422(
     error = 'Unacceptable data',
-    message = 'The data passed does not meet the reqiurements for this endpoint'
+    message = 'The data passed does not meet the reqiurements for this endpoint',
+    fields: string[] = []
 ) {
     return {
         error,
         message,
+        fields,
         status: 422,
     }
 }

@@ -34,7 +34,11 @@ export function validationFunc(
             .map((err: any) => `${err.param}: ${err.msg}`)
             .join(', ')
 
-        return res.status(422).json(code422(undefined, errString))
+        const fields: string[] = [
+            ...new Set(errors.array().map((err: any) => err.param)),
+        ]
+
+        return res.status(422).json(code422(undefined, errString, fields))
     }
 
     return next()
