@@ -4,7 +4,7 @@ import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { loginEndpoint } from '../../../api/Endpoints'
 import { BASIC_LOGIN, BASIC_LOGIN_ERROR } from './types'
-import { basicErrorMessage } from './helpers'
+import { networkErrorMsg } from './errorMessages'
 
 interface UserLoginType {
     email: string
@@ -38,7 +38,7 @@ export const basicLogin = ({
     if (error) {
         dispatch({
             type: BASIC_LOGIN_ERROR,
-            payload: basicErrorMessage,
+            payload: networkErrorMsg,
         })
     }
 }

@@ -120,7 +120,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                                             role="form"
                                             onSubmit={this.handleBasicLogin}>
                                             <div className="form-group mb-3">
-                                                <div className="input-group input-group-alternative">
+                                                <div className="input-group">
                                                     <div className="input-group-prepend">
                                                         <span className="input-group-text">
                                                             <i className="fa fa-envelope" />
@@ -142,7 +142,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                                                 </div>
                                             </div>
                                             <div className="form-group">
-                                                <div className="input-group input-group-alternative">
+                                                <div className="input-group">
                                                     <div className="input-group-prepend">
                                                         <span className="input-group-text">
                                                             <i className="fa fa-lock" />
@@ -216,7 +216,7 @@ class Login extends React.Component<LoginProps, LoginState> {
     }
 }
 
-const mapStateToProps = ({ user }: any) => ({ user })
+const mapStateToProps = ({ user }: any) => ({ user: user.login })
 const mapDispatchToProps = (dispatch: Dispatch) =>
     bindActionCreators(userActions, dispatch)
 

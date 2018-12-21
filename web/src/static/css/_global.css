@@ -326,3 +326,7 @@
 .btn-inner--text {
     margin-left: 0.75em;
 }
+
+.custom-file-input:hover {
+    cursor: pointer;
+}

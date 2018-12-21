@@ -54,6 +54,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
 
     render() {
         const { user } = this.props
+        console.log(this.props)
         const { userName, email, password } = this.state
         if (user.id) {
             this.handleNavigation()
@@ -114,7 +115,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
                                             role="form"
                                             onSubmit={this.handleBasicRegister}>
                                             <div className="form-group mb-3">
-                                                <div className="input-group input-group-alternative">
+                                                <div className="input-group">
                                                     <div className="input-group-prepend">
                                                         <span className="input-group-text">
                                                             <i className="fa fa-user" />
@@ -136,7 +137,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
                                                 </div>
                                             </div>
                                             <div className="form-group mb-3">
-                                                <div className="input-group input-group-alternative">
+                                                <div className="input-group">
                                                     <div className="input-group-prepend">
                                                         <span className="input-group-text">
                                                             <i className="fa fa-envelope" />
@@ -157,7 +158,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
                                                 </div>
                                             </div>
                                             <div className="form-group">
-                                                <div className="input-group input-group-alternative">
+                                                <div className="input-group">
                                                     <div className="input-group-prepend">
                                                         <span className="input-group-text">
                                                             <i className="fa fa-lock" />
@@ -207,7 +208,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
     }
 }
 
-const mapStateToProps = ({ user }: any) => ({ user })
+const mapStateToProps = ({ user }: any) => ({ user: user.register })
 const mapDispatchToProps = (dispatch: Dispatch) =>
     bindActionCreators(userActions, dispatch)
 

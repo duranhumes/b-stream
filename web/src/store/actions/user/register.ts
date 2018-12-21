@@ -4,7 +4,7 @@ import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { usersEndpoint } from '../../../api/Endpoints'
 import { BASIC_REGISTER, BASIC_REGISTER_ERROR } from './types'
-import { basicErrorMessage } from './helpers'
+import { networkErrorMsg } from './errorMessages'
 
 interface UserRegisterType {
     userName: string
@@ -41,7 +41,7 @@ export const basicRegister = ({
     if (error) {
         dispatch({
             type: BASIC_REGISTER_ERROR,
-            payload: basicErrorMessage,
+            payload: networkErrorMsg,
         })
     }
 }
