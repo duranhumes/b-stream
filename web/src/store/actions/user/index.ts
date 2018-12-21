@@ -1,6 +1,6 @@
 import { Dispatch } from 'redux'
-import axios from 'axios'
 
+import request from '../../../utils/request'
 import { BASIC_LOGIN, BASIC_LOGIN_ERROR } from './types'
 import { loginEndpoint } from '../../../api/Endpoints'
 import { checkApiHealth } from '../../../utils/checkAPIHealth'
@@ -17,16 +17,10 @@ export const basicLogin = ({
     rememberMe,
 }: UserLoginType) => async (dispatch: Dispatch) => {
     const error = await checkApiHealth(async () => {
+        const r = request()
         try {
-            const response = await axios({
-                url: loginEndpoint,
-                method: 'POST',
-                data: JSON.stringify({ email, password, rememberMe }),
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
+            const data = JSON.stringify({ email, password, rememberMe })
+            const response = await r.post(loginEndpoint, data)
             const user = response.data.response
 
             localStorage.setItem('user', JSON.stringify(user))
