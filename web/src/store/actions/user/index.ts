@@ -27,16 +27,16 @@ export const basicLogin = ({
                     'Content-Type': 'application/json',
                 },
             })
+            const user = response.data.response
 
-            localStorage.setItem('user', JSON.stringify(response.data.response))
+            localStorage.setItem('user', JSON.stringify(user))
 
             dispatch({
                 type: BASIC_LOGIN,
-                payload: { ...response.data.response },
+                payload: user,
             })
         } catch (error) {
-            const { data } = error.response
-            dispatch({ type: BASIC_LOGIN_ERROR, payload: { ...data } })
+            dispatch({ type: BASIC_LOGIN_ERROR, payload: error.response.data })
         }
     })
 
