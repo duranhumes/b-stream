@@ -1,0 +1,2 @@
+export const BASIC_LOGIN = 'BASIC_LOGIN'
+export const BASIC_LOGIN_ERROR = 'BASIC_LOGIN_ERROR'

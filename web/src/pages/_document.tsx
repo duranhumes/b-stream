@@ -1,18 +1,14 @@
 import * as React from 'react'
-import document, { Head, Main, NextScript } from 'next/document'
+import Document, { Head, Main, NextScript } from 'next/document'
 import { ServerStyleSheet } from 'styled-components'
-
-import '../static/css/_global.css'
-
-const Document = document
 export default class MyDocument extends Document {
-    static async getInitialProps(ctx) {
+    static async getInitialProps(ctx: any) {
         const sheet = new ServerStyleSheet()
 
         const originalRenderPage = ctx.renderPage
         ctx.renderPage = () =>
             originalRenderPage({
-                enhanceApp: App => props =>
+                enhanceApp: (App: any) => (props: any) =>
                     sheet.collectStyles(<App {...props} />),
             })
 
@@ -31,6 +27,12 @@ export default class MyDocument extends Document {
                         name="viewport"
                         content="initial-scale=1.0, width=device-width"
                     />
+                    <link
+                        rel="stylesheet"
+                        href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+                    />
+                    <link rel="stylesheet" href="/static/css/bracket.min.css" />
+                    <link rel="stylesheet" href="/static/css/_global.css" />
                 </Head>
                 <body>
                     <Main />

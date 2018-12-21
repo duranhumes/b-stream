@@ -1,13 +1,7 @@
 import { combineReducers } from 'redux'
 
-import clock from './clock'
-
-export const exampleInitialState = {
-    lastUpdate: 0,
-    light: false,
-    count: 0,
-}
+import user from './user'
 
 export default combineReducers({
-    clock,
+    user,
 })
