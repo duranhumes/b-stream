@@ -7,39 +7,33 @@ import * as userActions from '../store/actions/user'
 import { Header, Wrapper } from '../components'
 import { icons } from '../constants'
 
-interface LoginState {
+interface RegisterState {
+    userName: string
     email: string
     password: string
-    rememberMe: boolean
 }
 
-interface LoginProps {
-    basicLogin: (data: LoginState) => {}
+interface RegisterProps {
+    basicRegister: (data: RegisterState) => {}
     user: any
 }
 
-class Login extends React.Component<LoginProps, LoginState> {
+class Register extends React.Component<RegisterProps, RegisterState> {
     state = {
+        userName: '',
         email: '',
         password: '',
-        rememberMe: false,
     }
 
     handleInputUpdates = (e: React.FormEvent<HTMLInputElement>) => {
         const { name, value } = e.currentTarget
-        if (name === 'rememberMe') {
-            // @ts-ignore
-            const checked = e.currentTarget.checked
-            this.setState({ [name]: checked })
-        } else {
-            this.setState(prevState => ({ ...prevState, [name]: value }))
-        }
+        this.setState(prevState => ({ ...prevState, [name]: value }))
     }
 
-    handleBasicLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    handleBasicRegister = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        this.props.basicLogin(this.state)
+        this.props.basicRegister(this.state)
     }
 
     handleFieldValidation = (fields: string[]) => {
@@ -60,7 +54,7 @@ class Login extends React.Component<LoginProps, LoginState> {
 
     render() {
         const { user } = this.props
-        const { email, password, rememberMe } = this.state
+        const { userName, email, password } = this.state
         if (user.id) {
             this.handleNavigation()
         }
@@ -75,7 +69,7 @@ class Login extends React.Component<LoginProps, LoginState> {
                                 <div className="card bg-white shadow border-0">
                                     <div className="card-header bg-transparent pb-5">
                                         <div className="text-muted text-center mt-2 mb-3">
-                                            <small>Sign in with</small>
+                                            <small>Sign up with</small>
                                         </div>
                                         <div className="btn-wrapper text-center">
                                             <a
@@ -113,12 +107,34 @@ class Login extends React.Component<LoginProps, LoginState> {
                                         )}
                                         <div className="text-center text-muted mb-4">
                                             <small>
-                                                Or sign in with credentials
+                                                Or sign up with credentials
                                             </small>
                                         </div>
                                         <form
                                             role="form"
-                                            onSubmit={this.handleBasicLogin}>
+                                            onSubmit={this.handleBasicRegister}>
+                                            <div className="form-group mb-3">
+                                                <div className="input-group input-group-alternative">
+                                                    <div className="input-group-prepend">
+                                                        <span className="input-group-text">
+                                                            <i className="fa fa-user" />
+                                                        </span>
+                                                    </div>
+                                                    <input
+                                                        type="userName"
+                                                        className="form-control"
+                                                        placeholder="User Name"
+                                                        name="userName"
+                                                        value={userName}
+                                                        onChange={
+                                                            this
+                                                                .handleInputUpdates
+                                                        }
+                                                        autoFocus={true}
+                                                        required={true}
+                                                    />
+                                                </div>
+                                            </div>
                                             <div className="form-group mb-3">
                                                 <div className="input-group input-group-alternative">
                                                     <div className="input-group-prepend">
@@ -136,7 +152,6 @@ class Login extends React.Component<LoginProps, LoginState> {
                                                             this
                                                                 .handleInputUpdates
                                                         }
-                                                        autoFocus={true}
                                                         required={true}
                                                     />
                                                 </div>
@@ -162,30 +177,11 @@ class Login extends React.Component<LoginProps, LoginState> {
                                                     />
                                                 </div>
                                             </div>
-                                            <div className="custom-control custom-control-alternative custom-checkbox">
-                                                <input
-                                                    type="checkbox"
-                                                    className="custom-control-input"
-                                                    id="rememberMe"
-                                                    name="rememberMe"
-                                                    checked={rememberMe}
-                                                    onChange={
-                                                        this.handleInputUpdates
-                                                    }
-                                                />
-                                                <label
-                                                    className="custom-control-label"
-                                                    htmlFor="rememberMe">
-                                                    <span className="text-muted">
-                                                        Remember me
-                                                    </span>
-                                                </label>
-                                            </div>
                                             <div className="text-center">
                                                 <button
                                                     type="submit"
                                                     className="btn btn-primary btn-block my-4">
-                                                    Sign in
+                                                    Register
                                                 </button>
                                             </div>
                                         </form>
@@ -193,15 +189,10 @@ class Login extends React.Component<LoginProps, LoginState> {
                                 </div>
                                 <div className="row mt-3">
                                     <div className="col-6">
-                                        <a href="#">
-                                            <small>Forgot password?</small>
-                                        </a>
-                                    </div>
-                                    <div className="col-6 text-right">
-                                        <Link href="/register">
+                                        <Link href="/login">
                                             <a>
                                                 <small>
-                                                    Create new account
+                                                    Already have an account?
                                                 </small>
                                             </a>
                                         </Link>
@@ -229,4 +220,4 @@ export default connect(
     mapStateToProps,
     mapDispatchToProps,
     mergeProps
-)(Login)
+)(Register)

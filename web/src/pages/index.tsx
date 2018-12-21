@@ -13,6 +13,9 @@ class Index extends React.Component {
                     <Link href="/login">
                         <a className="btn btn-primary btn-sm">Login</a>
                     </Link>
+                    <Link href="/register">
+                        <a className="btn btn-primary btn-sm">Register</a>
+                    </Link>
                 </Wrapper>
             </>
         )
