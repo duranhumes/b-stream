@@ -5,3 +5,7 @@
 **/.next
 .env
 **/.env
+.history
+**/.history
+inspo/
+**/inspo
