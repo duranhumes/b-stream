@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux'
 
 import request from '../../../utils/request'
+import checkApiHealth from '../../../utils/checkAPIHealth'
 import { BASIC_LOGIN, BASIC_LOGIN_ERROR } from './types'
 import { loginEndpoint } from '../../../api/Endpoints'
-import { checkApiHealth } from '../../../utils/checkAPIHealth'
 
 interface UserLoginType {
     email: string
