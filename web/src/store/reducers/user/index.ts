@@ -1,9 +1,9 @@
-import { combineReducers } from 'redux'
-
 import login from './login'
 import register from './register'
 
-export default combineReducers({
-    login,
-    register,
-})
+export default (state: any, action: any) => {
+    const loginData = login(state, action)
+    const registerData = register(state, action)
+
+    return { ...loginData, ...registerData }
+}

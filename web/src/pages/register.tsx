@@ -54,7 +54,6 @@ class Register extends React.Component<RegisterProps, RegisterState> {
 
     render() {
         const { user } = this.props
-        console.log(this.props)
         const { userName, email, password } = this.state
         if (user.id) {
             this.handleNavigation()
@@ -208,7 +207,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
     }
 }
 
-const mapStateToProps = ({ user }: any) => ({ user: user.register })
+const mapStateToProps = ({ user }: any) => ({ user })
 const mapDispatchToProps = (dispatch: Dispatch) =>
     bindActionCreators(userActions, dispatch)
 

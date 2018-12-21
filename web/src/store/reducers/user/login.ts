@@ -21,7 +21,7 @@ interface ErrorPayloadType {
 export default (state = {}, { type, payload }: ReducerType) => {
     switch (type) {
         case BASIC_LOGIN: {
-            return { ...payload }
+            return payload
         }
         case BASIC_LOGIN_ERROR: {
             const { status, fields }: Partial<ErrorPayloadType> = payload

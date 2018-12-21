@@ -216,7 +216,7 @@ class Login extends React.Component<LoginProps, LoginState> {
     }
 }
 
-const mapStateToProps = ({ user }: any) => ({ user: user.login })
+const mapStateToProps = ({ user }: any) => ({ user })
 const mapDispatchToProps = (dispatch: Dispatch) =>
     bindActionCreators(userActions, dispatch)
 

@@ -20,7 +20,7 @@ interface ErrorPayloadType {
 export default (state = {}, { type, payload }: ReducerType) => {
     switch (type) {
         case BASIC_REGISTER: {
-            return { ...payload }
+            return payload
         }
         case BASIC_REGISTER_ERROR: {
             const {
