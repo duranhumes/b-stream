@@ -48,9 +48,10 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
         } else if (name === 'file') {
             // @ts-ignore
             const file = e.currentTarget.files[0]
+
+            // Load up audio to get pertinent metadata
             const reader = new FileReader()
             reader.readAsDataURL(file)
-            // Load up audio to get pertinent metadata
             reader.addEventListener('load', () =>
                 this.loadAudioFile(reader.result)
             )
