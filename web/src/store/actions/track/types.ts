@@ -1,0 +1,2 @@
+export const TRACK_UPLOAD = 'TRACK_UPLOAD'
+export const TRACK_UPLOAD_ERROR = 'TRACK_UPLOAD_ERROR'
