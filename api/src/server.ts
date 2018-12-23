@@ -28,14 +28,20 @@ class Server {
         if (process.env.NODE_ENV === 'production') {
             this.app.enable('trust proxy')
         }
+        this.app.disable('x-powered-by')
         this.app.use(
             new rateLimit({
                 windowMs: 15 * 60 * 1000, // 15 mins
                 max: 100, // upto 100 requests every 15 mins
             })
         )
-        this.app.disable('x-powered-by')
         this.app.use(helmet())
+        this.app.use(
+            cors({
+                credentials: true,
+                origin: String(process.env.WEB_CLIENT_URL),
+            })
+        )
         this.app.use(
             busboy({
                 immediate: true,
@@ -56,12 +62,6 @@ class Server {
                 stream: process.stderr,
             })
         )
-        this.app.use(
-            cors({
-                credentials: true,
-                origin: String(process.env.WEB_CLIENT_URL),
-            })
-        )
         passportConfig()
         this.app.use(session())
         this.app.use(passport.initialize())
@@ -73,7 +73,7 @@ class Server {
 
         this.app.use('/v1', router)
 
-        // Only allow specific requests content types to server
+        // Only allow specific content types
         router.use((req, res, next) => {
             const contentType = req.headers['content-type']
             if (req.method !== 'GET') {

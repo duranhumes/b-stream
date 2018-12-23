@@ -18,9 +18,9 @@ export const createPermTrack = async (trackData: TrackData) => {
 
     const { fileName, fileExt } = trackData
     const tempTrackFile = `${tempDir}/${fileName}.${fileExt}`
-    const tempTrackFileConverted = `${tempDir}/${fileName}-converted.${fileExt}`
     const destTrackFile = `${storageDir}/${fileName}.${fileExt}`
-    /*const command = `./ffmpeg.sh ${tempDir}/${fileName} ${fileExt}`
+    /*const tempTrackFileConverted = `${tempDir}/${fileName}-converted.${fileExt}`
+    const command = `./ffmpeg.sh ${tempDir}/${fileName} ${fileExt}`
     try {
         shell.cd(baseDir)
         shell.exec(
@@ -46,7 +46,7 @@ export const createPermTrack = async (trackData: TrackData) => {
     }*/
 
     try {
-        shell.mv(tempTrackFileConverted, destTrackFile)
+        shell.mv(tempTrackFile, destTrackFile)
         shell.rm(tempTrackFile)
     } catch (err) {
         logger('Create perm track error', err, 500)
