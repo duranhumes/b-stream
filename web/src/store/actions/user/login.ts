@@ -4,7 +4,7 @@ import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { loginEndpoint } from '../../../api/Endpoints'
 import { BASIC_LOGIN, BASIC_LOGIN_ERROR } from './types'
-import { networkErrorMsg } from './errorMessages'
+import { networkErrorMsg } from '../errorMessages'
 
 interface UserLoginType {
     email: string

@@ -1,17 +1,7 @@
 import login from './login'
 import register from './register'
 
-export interface ReducerType {
-    type: string
-    payload: object
-}
-
-export interface ErrorPayloadType {
-    error: string
-    message: string
-    status: number
-    fields?: string[]
-}
+import { ReducerType } from '../../../interfaces'
 
 export default (state = {}, action: ReducerType) => {
     const loginData = login(state, action)

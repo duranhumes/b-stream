@@ -4,7 +4,7 @@ import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { usersEndpoint } from '../../../api/Endpoints'
 import { BASIC_REGISTER, BASIC_REGISTER_ERROR } from './types'
-import { networkErrorMsg } from './errorMessages'
+import { networkErrorMsg } from '../errorMessages'
 
 interface UserRegisterType {
     userName: string

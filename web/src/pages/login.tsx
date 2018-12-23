@@ -6,19 +6,9 @@ import { connect } from 'react-redux'
 import * as userActions from '../store/actions/user'
 import { Header, Wrapper } from '../components'
 import { icons } from '../constants'
+import { UserLogin, UserLoginProps } from '../interfaces'
 
-interface LoginState {
-    email: string
-    password: string
-    rememberMe: boolean
-}
-
-interface LoginProps {
-    basicLogin: (data: LoginState) => {}
-    user: any
-}
-
-class Login extends React.Component<LoginProps, LoginState> {
+class Login extends React.Component<UserLoginProps, UserLogin> {
     state = {
         email: '',
         password: '',

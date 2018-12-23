@@ -4,7 +4,7 @@ import {
     duplicateUserMsg,
     genericErrorMsg,
 } from './errorMessages'
-import { ReducerType, ErrorPayloadType } from '.'
+import { ReducerType, ErrorPayloadType } from '../../../interfaces'
 
 export default (state = {}, { type, payload }: ReducerType) => {
     switch (type) {

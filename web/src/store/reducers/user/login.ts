@@ -5,7 +5,7 @@ import {
     userNotFoundErrorMsg,
     invalidCredentialsMsg,
 } from './errorMessages'
-import { ErrorPayloadType, ReducerType } from '.'
+import { ErrorPayloadType, ReducerType } from '../../../interfaces'
 
 export default (state = {}, { type, payload }: ReducerType) => {
     switch (type) {

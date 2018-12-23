@@ -6,19 +6,9 @@ import { connect } from 'react-redux'
 import * as userActions from '../store/actions/user'
 import { Header, Wrapper } from '../components'
 import { icons } from '../constants'
+import { UserRegister, UserRegisterProps } from '../interfaces'
 
-interface RegisterState {
-    userName: string
-    email: string
-    password: string
-}
-
-interface RegisterProps {
-    basicRegister: (data: RegisterState) => {}
-    user: any
-}
-
-class Register extends React.Component<RegisterProps, RegisterState> {
+class Register extends React.Component<UserRegisterProps, UserRegister> {
     state = {
         userName: '',
         email: '',
