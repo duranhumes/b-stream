@@ -108,7 +108,7 @@ class TrackController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        const [permTrack, permTrackErr] = await promisify(
+        const [, permTrackErr] = await promisify(
             TrackServices.createPermTrack(tempTrack)
         )
         if (permTrackErr) {
@@ -122,10 +122,6 @@ class TrackController extends Controller {
             ...tempTrack,
         }
 
-        console.log(permTrack)
-        console.log(trackData)
-        return res.sendStatus(201)
-
         const [newTrackId, newTrackIdErr] = await promisify(
             TrackServices.create(trackData)
         )
@@ -135,8 +131,9 @@ class TrackController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
+        const fieldsToRemove = ['fileExt', 'fileName', 'fileSize']
         const [foundTrack, foundTrackErr] = await promisify(
-            TrackServices.findOne('id', newTrackId)
+            TrackServices.findOne('id', newTrackId, true, fieldsToRemove)
         )
         if (foundTrackErr) {
             logger(req.ip, foundTrackErr, 500)

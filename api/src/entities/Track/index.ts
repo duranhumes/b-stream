@@ -2,18 +2,18 @@ import {
     Entity,
     Column,
     OneToMany,
-    ManyToOne,
-    ManyToMany,
-    JoinTable,
+    // ManyToOne,
+    // ManyToMany,
+    // JoinTable,
 } from 'typeorm'
 import { Length, IsOptional } from 'class-validator'
 
 import { Model } from '../Model'
 import { TrackArtwork } from '../TrackArtwork'
-import { Album } from '../Album'
-import { Artist } from '../Artist'
-import { Genre } from '../Genre'
-import { User } from '../User'
+// import { Album } from '../Album'
+// import { Artist } from '../Artist'
+// import { Genre } from '../Genre'
+// import { User } from '../User'
 
 export const allowedTrackFileExt = ['mp4', 'mp3']
 
@@ -57,16 +57,16 @@ export class Track extends Model {
     @OneToMany(() => TrackArtwork, trackArtwork => trackArtwork.track)
     public trackArtwork: TrackArtwork[] | undefined
 
-    @ManyToOne(() => Album, album => album.id)
-    public album: Album | undefined
+    // @ManyToOne(() => Album, album => album.id)
+    // public album: Album | undefined
 
-    @ManyToMany(() => Artist, artist => artist.id)
-    public artist: Artist | undefined
+    // @ManyToMany(() => Artist, artist => artist.id)
+    // public artist: Artist | undefined
 
-    @ManyToMany(() => Genre, genre => genre.id)
-    @JoinTable({ name: 'trackGenre' })
-    public genres: Genre[] | undefined
+    // @ManyToMany(() => Genre, genre => genre.id)
+    // @JoinTable({ name: 'trackGenre' })
+    // public genres: Genre[] | undefined
 
-    @ManyToOne(() => User, user => user.id)
-    public user: User | undefined
+    // @ManyToOne(() => User, user => user.id)
+    // public user: User | undefined
 }

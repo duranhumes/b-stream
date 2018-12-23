@@ -13,9 +13,5 @@ export default [
     'isDownloadable',
     'isExplicit',
     'tags',
-    'album',
-    'user',
     'trackArtwork',
-    'artist',
-    'genres',
 ]
