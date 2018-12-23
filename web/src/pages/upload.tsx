@@ -23,27 +23,19 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
             isDownloadable: false,
             isExplicit: false,
             tags: [],
-            album: undefined,
-            trackNumber: 1,
-            genres: [],
-            artist: undefined,
-            trackArtwork: undefined,
         }
 
         this.formData = undefined
     }
 
-    loadAudioFile = () => {
+    loadAudioFile = (audioSrc: any) => {
         const audioElement = new Audio()
-        if (audioElement) {
-            // @ts-ignore
-            audioElement.src = reader.result
-            audioElement.load()
-            const audioMeta = () =>
-                this.formData!.append('duration', String(audioElement.duration))
-            audioElement.addEventListener('loadedmetadata', audioMeta)
-            audioElement.removeEventListener('loadedmetadata', audioMeta)
-        }
+        audioElement.src = audioSrc
+        audioElement.load()
+        const setAudioDuration = () =>
+            this.formData!.append('duration', String(audioElement.duration))
+        audioElement.addEventListener('loadedmetadata', setAudioDuration)
+        audioElement.removeEventListener('loadedmetadata', setAudioDuration)
     }
 
     handleInputUpdates = (e: CustomInput) => {
@@ -53,19 +45,21 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
             const checked = e.currentTarget.checked
             this.setState(prevState => ({ ...prevState, [name]: checked }))
             this.formData!.append(name, Number(checked).toString())
-        } else if (name === 'file' || name === 'trackArtwork') {
+        } else if (name === 'file') {
             // @ts-ignore
             const file = e.currentTarget.files[0]
             const reader = new FileReader()
             reader.readAsDataURL(file)
-            reader.addEventListener('load', this.loadAudioFile)
-            reader.removeEventListener('load', this.loadAudioFile)
+            // Load up audio to get pertinent metadata
+            reader.addEventListener('load', () =>
+                this.loadAudioFile(reader.result)
+            )
+            reader.removeEventListener('load', () =>
+                this.loadAudioFile(reader.result)
+            )
 
+            this.setState(prevState => ({ ...prevState, [name]: file }))
             this.formData!.append(name, file)
-            this.setState(prevState => ({
-                ...prevState,
-                [name]: file,
-            }))
         } else {
             this.setState(prevState => ({ ...prevState, [name]: value }))
             this.formData!.append(name, value)
@@ -91,13 +85,7 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
             isDownloadable,
             isExplicit,
             tags,
-            album,
-            trackNumber,
-            genres,
-            artist,
-            trackArtwork,
         } = this.state
-        console.log(this.props)
 
         return (
             <>
@@ -207,80 +195,6 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
                                             onChange={this.handleInputUpdates}
                                             required={true}
                                         />
-                                    </div>
-                                </div>
-                                <div className="form-group mb-3">
-                                    <div className="input-group">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Album"
-                                            name="album"
-                                            value={album}
-                                            onChange={this.handleInputUpdates}
-                                            required={true}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group mb-3">
-                                    <div className="input-group">
-                                        <input
-                                            type="number"
-                                            className="form-control"
-                                            placeholder="Number"
-                                            name="trackNumber"
-                                            value={trackNumber}
-                                            onChange={this.handleInputUpdates}
-                                            required={true}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group mb-3">
-                                    <div className="input-group">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Generes"
-                                            name="genres"
-                                            value={genres}
-                                            onChange={this.handleInputUpdates}
-                                            required={true}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group mb-3">
-                                    <div className="input-group">
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            placeholder="Artist"
-                                            name="artist"
-                                            value={artist}
-                                            onChange={this.handleInputUpdates}
-                                            required={true}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="form-group mb-3">
-                                    <div className="custom-file">
-                                        <input
-                                            type="file"
-                                            id="trackArtwork"
-                                            name="trackArtwork"
-                                            className="custom-file-input"
-                                            onChange={this.handleInputUpdates}
-                                            // required={true}
-                                        />
-                                        <label
-                                            htmlFor="trackArtwork"
-                                            className="custom-file-label">
-                                            {trackArtwork &&
-                                            trackArtwork.name ? (
-                                                <p>{trackArtwork.name}</p>
-                                            ) : (
-                                                <p>Choose your artwork</p>
-                                            )}
-                                        </label>
                                     </div>
                                 </div>
                                 <div className="text-center">

@@ -5,11 +5,6 @@ export interface TrackUpload {
     isDownloadable: boolean
     isExplicit: boolean
     tags: string[]
-    album: undefined
-    trackNumber: number
-    genres: string[]
-    artist: undefined
-    trackArtwork: File | undefined
 }
 
 export interface TrackUploadProps {
