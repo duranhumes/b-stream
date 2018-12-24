@@ -58,20 +58,25 @@ class TrackController extends Controller {
         const { name, fileName, fileSize, fileExt } = foundTrack
         const trackFile = `${storageDir}/${fileName}.${fileExt}`
         fs.exists(trackFile, exists => {
-            if (!exists) {
-                res.status(404).json(httpMessages.code404())
+            if (exists) {
+                res.writeHead(200, {
+                    'Content-Type': `audio/${fileExt}`,
+                    'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
+                    'Content-Length': fileSize,
+                })
+                const stream = fs.createReadStream(trackFile)
+                stream.on('error', error => {
+                    logger(`${fileName}.${fileExt} stream error`, error, 404)
+                    res.writeHead(404, 'Not Found')
+
+                    return res.end()
+                })
+
+                stream.pipe(res)
             }
-
-            return
         })
 
-        res.writeHead(200, {
-            'Content-Type': `audio/${fileExt}`,
-            'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
-            'Content-Length': fileSize,
-        })
-        const stream = fs.createReadStream(trackFile)
-        stream.pipe(res)
+        return res.status(404).json(httpMessages.code404())
     }
 
     private uploadTrack = async (req: any, res: Response): Promise<any> => {
