@@ -80,7 +80,6 @@ class Server {
                 const allowedContentTypes = [
                     'application/json',
                     'multipart/form-data',
-                    'application/x-www-form-urlencoded',
                 ]
                 const contentTypeMatches = contentType
                     ? allowedContentTypes.filter(s => contentType.includes(s))
@@ -114,7 +113,6 @@ class Server {
         router.use('/users', controllers.UserController)
         router.use('/tracks', controllers.TrackController)
         router.use('/albums', controllers.AlbumController)
-        router.use('/stream', controllers.StreamController)
 
         // To prevent 404 if using the API in browser
         const noContentUrls = ['/favicon.ico', '/robots.txt']

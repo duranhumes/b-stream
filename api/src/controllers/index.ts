@@ -3,7 +3,6 @@ import LoginController from './LoginController'
 import LogoutController from './LogoutController'
 import TrackController from './TrackController'
 import AlbumController from './AlbumController'
-import StreamController from './StreamController'
 
 export const controllers = {
     UserController,
@@ -11,5 +10,4 @@ export const controllers = {
     LogoutController,
     TrackController,
     AlbumController,
-    StreamController,
 }
