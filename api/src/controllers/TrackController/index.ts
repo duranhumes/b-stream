@@ -89,8 +89,6 @@ class TrackController extends Controller {
                 })
 
                 stream.on('end', () => {
-                    res.writeHead(200)
-
                     return res.end()
                 })
 
