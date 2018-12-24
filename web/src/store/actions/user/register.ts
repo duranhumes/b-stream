@@ -3,7 +3,7 @@ import { Dispatch } from 'redux'
 import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { usersEndpoint } from '../../../api/Endpoints'
-import { BASIC_REGISTER, BASIC_REGISTER_ERROR } from './types'
+import { BASIC_AUTH_REGISTER, BASIC_AUTH_ERROR } from './types'
 import { networkErrorMsg } from '../errorMessages'
 
 interface UserRegisterType {
@@ -27,12 +27,12 @@ export const basicRegister = ({
             localStorage.setItem('user', JSON.stringify(user))
 
             dispatch({
-                type: BASIC_REGISTER,
+                type: BASIC_AUTH_REGISTER,
                 payload: user,
             })
         } catch (error) {
             dispatch({
-                type: BASIC_REGISTER_ERROR,
+                type: BASIC_AUTH_ERROR,
                 payload: error.response.data,
             })
         }
@@ -40,7 +40,7 @@ export const basicRegister = ({
 
     if (error) {
         dispatch({
-            type: BASIC_REGISTER_ERROR,
+            type: BASIC_AUTH_ERROR,
             payload: networkErrorMsg,
         })
     }
