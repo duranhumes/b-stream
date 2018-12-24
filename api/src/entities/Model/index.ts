@@ -4,7 +4,8 @@ import {
     CreateDateColumn,
     BeforeInsert,
 } from 'typeorm'
-import * as uuid from 'uuid/v4'
+
+import { formattedUUID } from '../../utils'
 
 export abstract class Model {
     @PrimaryColumn('uuid')
@@ -18,6 +19,6 @@ export abstract class Model {
 
     @BeforeInsert()
     beforeInsert() {
-        this.id = uuid().replace(/[^a-z0-9]/gi, '')
+        this.id = formattedUUID()
     }
 }

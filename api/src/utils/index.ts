@@ -1,3 +1,5 @@
+import * as uuid from 'uuid/v4'
+
 /**
  *
  * @param {object} obj
@@ -107,4 +109,8 @@ export function readableBytes(bytes: number): string {
     const convertedBytes = Number((bytes / Math.pow(1024, i)).toFixed(2)) * 1
 
     return `${convertedBytes}${sizes[i]}`
+}
+
+export function formattedUUID() {
+    return uuid().replace(/[^a-z0-9]/gi, '')
 }

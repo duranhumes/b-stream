@@ -1,7 +1,8 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import * as uuid from 'uuid/v4'
 import { Readable } from 'stream'
+
+import { formattedUUID } from '../../utils'
 
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const tempDir = `${baseDir}/temp`
@@ -24,7 +25,7 @@ export interface TrackData {
 export const createTempTrack = async (
     tempTrackData: TempTrackData
 ): Promise<any> => {
-    const trackName = uuid().replace(/[^a-z0-9]/gi, '')
+    const trackName = formattedUUID()
     const trackExt = tempTrackData.mimetype.split('/')[1]
     const tempTrackFile = `${tempDir}/${trackName}.${trackExt}`
 
