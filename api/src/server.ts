@@ -33,6 +33,11 @@ class Server {
             new rateLimit({
                 windowMs: 15 * 60 * 1000, // 15 mins
                 max: 100, // upto 100 requests every 15 mins
+                message: {
+                    status: 429,
+                    error: 'To many requests',
+                    message: 'To many requests, try again later',
+                },
             })
         )
         this.app.use(helmet())
