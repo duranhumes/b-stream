@@ -23,8 +23,10 @@ export class Track extends Model {
     @Column({ type: 'enum', enum: allowedTrackFileExt, nullable: false })
     public fileExt: string | undefined
 
+    /*
     @Column({ type: 'int', width: 11, nullable: false })
     public duration: number | undefined
+    */
 
     @Column({ type: 'int', width: 11, nullable: false, default: 0 })
     public timesPlayed: number | undefined

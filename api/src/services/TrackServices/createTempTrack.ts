@@ -59,9 +59,12 @@ export const createTempTrack = async (
 
     fs.exists(tempTrackFile, exists => {
         if (!exists) {
-            throw new Error(
-                `${trackData.fileName}.${trackData.fileExt} does not exist`
-            )
+            Promise.reject({
+                code: 404,
+                message: `${trackData.fileName}.${
+                    trackData.fileExt
+                } does not exist`,
+            })
         }
     })
 

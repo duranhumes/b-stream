@@ -7,11 +7,9 @@ export default [
     'fileName',
     'fileSize',
     'fileExt',
-    'duration',
     'timesPlayed',
     'trackNumber',
     'isDownloadable',
     'isExplicit',
     'tags',
-    'trackArtwork',
 ]

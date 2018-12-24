@@ -11,8 +11,6 @@ type CustomInput =
     | React.FormEvent<HTMLTextAreaElement>
 
 class Upload extends React.Component<TrackUploadProps, TrackUpload> {
-    formData: FormData | undefined
-
     constructor(props: TrackUploadProps) {
         super(props)
 
@@ -24,18 +22,6 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
             isExplicit: false,
             tags: [],
         }
-
-        this.formData = undefined
-    }
-
-    loadAudioFile = (audioSrc: any) => {
-        const audioElement = new Audio()
-        audioElement.src = audioSrc
-        audioElement.load()
-        const setAudioDuration = () =>
-            this.formData!.append('duration', String(audioElement.duration))
-        audioElement.addEventListener('loadedmetadata', setAudioDuration)
-        audioElement.removeEventListener('loadedmetadata', setAudioDuration)
     }
 
     handleInputUpdates = (e: CustomInput) => {
@@ -44,38 +30,31 @@ class Upload extends React.Component<TrackUploadProps, TrackUpload> {
             // @ts-ignore
             const checked = e.currentTarget.checked
             this.setState(prevState => ({ ...prevState, [name]: checked }))
-            this.formData!.append(name, Number(checked).toString())
         } else if (name === 'file') {
             // @ts-ignore
             const file = e.currentTarget.files[0]
-
-            // Load up audio to get pertinent metadata
-            const reader = new FileReader()
-            reader.readAsDataURL(file)
-            reader.addEventListener('load', () =>
-                this.loadAudioFile(reader.result)
-            )
-            reader.removeEventListener('load', () =>
-                this.loadAudioFile(reader.result)
-            )
-
             this.setState(prevState => ({ ...prevState, [name]: file }))
-            this.formData!.append(name, file)
         } else {
             this.setState(prevState => ({ ...prevState, [name]: value }))
-            this.formData!.append(name, value)
         }
     }
 
     handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        // @ts-ignore
-        this.props.uploadTrack(this.formData)
-    }
+        const formData = new FormData()
+        for (const key in this.state) {
+            if (this.state.hasOwnProperty(key)) {
+                if (key === 'isExplicit' || key === 'isDownloadable') {
+                    formData.append(key, Number(this.state[key]).toString())
+                } else {
+                    formData.append(key, this.state[key])
+                }
+            }
+        }
 
-    componentDidMount() {
-        this.formData = new FormData()
+        // @ts-ignore
+        this.props.uploadTrack(formData)
     }
 
     render() {
