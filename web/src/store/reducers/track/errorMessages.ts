@@ -12,6 +12,13 @@ export const genericErrorMsg = (overwrite?: any) => ({
     ...overwrite,
 })
 
+export const trackNotFoundErrorMsg = (overwrite?: any) => ({
+    fields: [],
+    error: true,
+    message: "That track doesn't exist",
+    ...overwrite,
+})
+
 export const authErrorMsg = (overwrite?: any) => ({
     fields: [],
     error: true,

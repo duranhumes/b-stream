@@ -3,26 +3,19 @@ import { Dispatch } from 'redux'
 import request from '../../../utils/request'
 import checkAPIHealth from '../../../utils/checkAPIHealth'
 import { tracksEndpoint } from '../../../api/Endpoints'
-import { TRACK_UPLOAD, TRACK_ERROR } from './types'
+import { GET_TRACKS, TRACK_ERROR } from './types'
 import { networkErrorMsg } from '../errorMessages'
-import { TrackUpload } from '../../../interfaces'
 
-export const uploadTrack = (trackData: TrackUpload) => async (
-    dispatch: Dispatch
-) => {
+export const getTracks = () => async (dispatch: Dispatch) => {
     const error = await checkAPIHealth(async () => {
-        const r = request({
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
+        const r = request()
         try {
-            const response = await r.post(tracksEndpoint, trackData)
-            const track = response.data.response
+            const response = await r.get(tracksEndpoint)
+            const tracks = response.data.response
 
             dispatch({
-                type: TRACK_UPLOAD,
-                payload: track,
+                type: GET_TRACKS,
+                payload: tracks,
             })
         } catch (error) {
             dispatch({ type: TRACK_ERROR, payload: error.response.data })

@@ -88,11 +88,15 @@ class TrackController extends Controller {
                     return res.end()
                 })
 
+                stream.on('end', () => {
+                    res.writeHead(200)
+
+                    return res.end()
+                })
+
                 stream.pipe(res)
             }
         })
-
-        return res.status(404).json(httpMessages.code404())
     }
 
     private uploadTrack = async (req: any, res: Response): Promise<any> => {
