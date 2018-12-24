@@ -26,46 +26,52 @@ class TrackController extends Controller {
 
     public routes() {
         this.router.get(
-            '/',
+            '/:id',
             [...validationRules.getTrack],
             validationFunc,
             this.getTrack
         )
-        this.router.post('/', this.uploadTrack)
+        this.router.post(
+            '/',
+            [...validationRules.uploadTrack],
+            this.uploadTrack
+        )
     }
 
     private getTrack = async (req: Request, res: Response): Promise<any> => {
         const trackId = this.escapeString(req.params.id).trim()
-
-        const [track, trackErr] = await promisify(
+        const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', trackId)
         )
-        if (trackErr) {
-            logger(req.ip, trackErr, 500)
+        if (foundTrackErr) {
+            if (foundTrackErr.code === 404) {
+                logger(req.ip, foundTrackErr, 404)
+
+                return res.status(404).json(httpMessages.code404())
+            }
+
+            logger(req.ip, foundTrackErr, 500)
 
             return res.status(500).json(httpMessages.code500())
         }
 
-        if (!track) {
-            return res.status(404).json(httpMessages.code404())
-        }
-
-        const { fileName, fileExt } = track
-        const file = `${storageDir}/${fileName}.${fileExt}`
-        console.log(file)
-
-        fs.exists(file, exists => {
-            if (exists) {
-                const rstream = fs.createReadStream(file)
-                rstream
-                    .pipe(res)
-                    .on('data', () => console.log('Sending data'))
-                    .on('finish', () => console.log('Done sending data'))
-            } else {
+        const { name, fileName, fileSize, fileExt } = foundTrack
+        const trackFile = `${storageDir}/${fileName}.${fileExt}`
+        fs.exists(trackFile, exists => {
+            if (!exists) {
                 res.status(404).json(httpMessages.code404())
-                return res.end()
             }
+
+            return
         })
+
+        res.writeHead(200, {
+            'Content-Type': `audio/${fileExt}`,
+            'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
+            'Content-Length': fileSize,
+        })
+        const stream = fs.createReadStream(trackFile)
+        stream.pipe(res)
     }
 
     private uploadTrack = async (req: any, res: Response): Promise<any> => {
