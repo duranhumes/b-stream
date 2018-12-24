@@ -25,6 +25,7 @@ class TrackController extends Controller {
     }
 
     public routes() {
+        this.router.get('/', this.getTracks)
         this.router.get(
             '/:id',
             [...validationRules.getTrack],
@@ -37,6 +38,20 @@ class TrackController extends Controller {
             validationFunc,
             this.uploadTrack
         )
+    }
+
+    private getTracks = async (req: Request, res: Response): Promise<any> => {
+        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
+        const [tracks, tracksErr] = await promisify(
+            TrackServices.findAll(true, fieldsToRemove)
+        )
+        if (tracksErr) {
+            logger(req.ip, tracksErr, 500)
+
+            return res.status(500).json(httpMessages.code500())
+        }
+
+        return res.status(200).json(httpMessages.code200(tracks))
     }
 
     private getTrack = async (req: Request, res: Response): Promise<any> => {
