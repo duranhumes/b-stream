@@ -34,6 +34,7 @@ class TrackController extends Controller {
         this.router.post(
             '/',
             [...validationRules.uploadTrack],
+            validationFunc,
             this.uploadTrack
         )
     }
