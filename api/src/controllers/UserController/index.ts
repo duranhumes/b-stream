@@ -9,6 +9,7 @@ import seedUsers from '../../database/seeders/seedUsers'
 import { promisify, pick } from '../../utils'
 import UserSchema from '../../schemas/UserSchema'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
+import requireLogin from '../../middleware/requireLogin'
 
 class UserController extends Controller {
     public router: Router
@@ -44,12 +45,14 @@ class UserController extends Controller {
             '/:id',
             [...validationRules.updateUser],
             validationFunc,
+            requireLogin,
             this.updateUser
         )
         this.router.delete(
             '/:id',
             [...validationRules.deleteUser],
             validationFunc,
+            requireLogin,
             this.deleteUser
         )
     }
@@ -221,13 +224,6 @@ class UserController extends Controller {
         const userId = this.escapeString(req.params.id).trim()
 
         /**
-         * Check if user can perform this action
-         */
-        if (!req.isAuthenticated()) {
-            return res.status(403).json(httpMessages.code403())
-        }
-
-        /**
          * Find user
          */
         const [user, userErr] = await promisify(
@@ -289,13 +285,6 @@ class UserController extends Controller {
         res: Response
     ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
-
-        /**
-         * Check if user can perform this action
-         */
-        if (!req.isAuthenticated()) {
-            return res.status(403).json(httpMessages.code403())
-        }
 
         /**
          * Find user

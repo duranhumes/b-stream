@@ -1,5 +1,12 @@
-import * as passport from 'passport'
+import { Response, NextFunction } from 'express'
 
-import './passport'
+import { ExtendedRequest } from '../interfaces/ExtendedRequest'
+import * as httpMessages from '../utils/httpMessages'
 
-export default passport.authenticate('local', { session: true })
+export default (req: ExtendedRequest, res: Response, next: NextFunction) => {
+    if (req.isAuthenticated()) {
+        return next()
+    }
+
+    return res.status(401).json(httpMessages.code401())
+}
