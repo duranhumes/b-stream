@@ -23,6 +23,7 @@ class UserController extends Controller {
 
     public routes() {
         this.router.get('/', this.getUsers)
+        this.router.get('/me', requireLogin, this.me)
         this.router.post(
             '/seed',
             [...validationRules.seeder],
@@ -55,6 +56,13 @@ class UserController extends Controller {
             requireLogin,
             this.deleteUser
         )
+    }
+
+    /**
+     * Returns currently logged in user
+     */
+    private me = (req: ExtendedRequest, res: Response) => {
+        res.status(200).json(httpMessages.code200(req.user))
     }
 
     /**
