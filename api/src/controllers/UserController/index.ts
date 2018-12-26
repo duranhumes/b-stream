@@ -62,7 +62,7 @@ class UserController extends Controller {
      * Returns currently logged in user
      */
     private me = (req: ExtendedRequest, res: Response) => {
-        res.status(200).json(httpMessages.code200(req.user))
+        return res.status(200).json(httpMessages.code200(req.user))
     }
 
     /**
@@ -231,6 +231,11 @@ class UserController extends Controller {
     ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
 
+        // Check if logged in user is the same as requested user
+        if (req.user.id !== userId) {
+            return res.status(403).json(httpMessages.code403())
+        }
+
         /**
          * Find user
          */
@@ -293,6 +298,11 @@ class UserController extends Controller {
         res: Response
     ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
+
+        // Check if logged in user is the same as requested user
+        if (req.user.id !== userId) {
+            return res.status(403).json(httpMessages.code403())
+        }
 
         /**
          * Find user
