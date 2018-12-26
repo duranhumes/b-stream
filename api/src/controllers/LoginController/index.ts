@@ -7,11 +7,12 @@ import { verifyPassword } from '../../auth/password'
 import { UserServices } from '../../services/UserServices'
 import * as httpMessages from '../../utils/httpMessages'
 import { validationFunc, validationRules } from './validation'
+import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 
 class LoginController extends Controller {
     public router: Router
 
-    public constructor() {
+    constructor() {
         super()
 
         this.router = Router()
@@ -32,7 +33,10 @@ class LoginController extends Controller {
      * @field email
      * @field password
      */
-    private basicLogin = async (req: any, res: Response): Promise<any> => {
+    private basicLogin = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         /**
          * Build request object
          */
@@ -110,6 +114,7 @@ class LoginController extends Controller {
 
             req.session!.user = filteredUserObj.id
 
+            // @ts-ignore
             res.setHeader('XSRF-TOKEN', req.sessionID)
             return res.status(200).json(httpMessages.code200(response))
         })

@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { Router, Request, Response } from 'express'
+import { Router, Response } from 'express'
 
 import Controller from '../Controller'
 import * as httpMessages from '../../utils/httpMessages'
@@ -10,6 +10,7 @@ import TrackSchema from '../../schemas/TrackSchema'
 import { TrackServices } from '../../services/TrackServices'
 import { logger } from '../../utils/logging'
 import { allowedTrackFileExt } from '../../entities/Track'
+import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
@@ -17,7 +18,7 @@ const storageDir = `${baseDir}/storage`
 class TrackController extends Controller {
     public router: Router
 
-    public constructor() {
+    constructor() {
         super()
 
         this.router = Router()
@@ -40,7 +41,10 @@ class TrackController extends Controller {
         )
     }
 
-    private getTracks = async (req: Request, res: Response): Promise<any> => {
+    private getTracks = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [tracks, tracksErr] = await promisify(
             TrackServices.findAll(true, fieldsToRemove)
@@ -54,7 +58,10 @@ class TrackController extends Controller {
         return res.status(200).json(httpMessages.code200(tracks))
     }
 
-    private getTrack = async (req: Request, res: Response): Promise<any> => {
+    private getTrack = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const trackId = this.escapeString(req.params.id).trim()
         const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', trackId)

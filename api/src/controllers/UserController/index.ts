@@ -1,4 +1,4 @@
-import { Router, Response, Request } from 'express'
+import { Router, Response } from 'express'
 
 import Controller from '../Controller'
 import * as httpMessages from '../../utils/httpMessages'
@@ -8,11 +8,12 @@ import { validationRules, validationFunc } from './validation'
 import seedUsers from '../../database/seeders/seedUsers'
 import { promisify, pick } from '../../utils'
 import UserSchema from '../../schemas/UserSchema'
+import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 
 class UserController extends Controller {
     public router: Router
 
-    public constructor() {
+    constructor() {
         super()
 
         this.router = Router()
@@ -58,7 +59,10 @@ class UserController extends Controller {
      *
      * @field {number} amount of users to create
      */
-    private seeder = async (req: Request, res: Response): Promise<any> => {
+    private seeder = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const amountOfUsers = Number(this.escapeString(req.query.amount).trim())
 
         await seedUsers(amountOfUsers)
@@ -72,14 +76,8 @@ class UserController extends Controller {
 
         const existingUsersCount = users.length
 
-        return res
-            .status(200)
-            .json(
-                httpMessages.code200(
-                    {},
-                    `${amountOfUsers} users created. There are ${existingUsersCount} users now in DB.`
-                )
-            )
+        const message = `${amountOfUsers} users created. There are ${existingUsersCount} users now in DB.`
+        return res.status(200).json(httpMessages.code200({}, message))
     }
 
     /**
@@ -89,7 +87,10 @@ class UserController extends Controller {
      * @field email
      * @field password
      */
-    private createUser = async (req: any, res: Response): Promise<any> => {
+    private createUser = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         // Filter sent data based on schema
         const filteredData = pick(req.body, UserSchema)
         const data = {}
@@ -158,6 +159,7 @@ class UserController extends Controller {
 
             req.session!.user = newUser.id
 
+            // @ts-ignore
             res.setHeader('XSRF-TOKEN', req.sessionID)
             return res.status(201).json(httpMessages.code201(response))
         })
@@ -168,7 +170,10 @@ class UserController extends Controller {
     /**
      * Returns a single user object
      */
-    private getUser = async (req: Request, res: Response): Promise<any> => {
+    private getUser = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
 
         const [user, userErr] = await promisify(
@@ -192,7 +197,10 @@ class UserController extends Controller {
     /**
      * Returns an array of users
      */
-    private getUsers = async (req: Request, res: Response): Promise<any> => {
+    private getUsers = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const [users, usersErr] = await promisify(UserServices.findAll())
         if (usersErr) {
             logger(req.ip, usersErr, 500)
@@ -206,16 +214,18 @@ class UserController extends Controller {
     /**
      * Updates a user
      */
-    private updateUser = async (req: any, res: Response): Promise<any> => {
+    private updateUser = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
 
         /**
          * Check if user can perform this action
          */
-        // console.table(req.user)
-        // if (req.user.id !== userId) {
-        //     return res.status(403).json(httpMessages.code403())
-        // }
+        if (!req.isAuthenticated()) {
+            return res.status(403).json(httpMessages.code403())
+        }
 
         /**
          * Find user
@@ -241,10 +251,6 @@ class UserController extends Controller {
 
         // Filter sent data based on schema
         const filteredData = pick(req.body, UserSchema)
-
-        /**
-         * Update fields
-         */
         const data = {}
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
@@ -278,21 +284,24 @@ class UserController extends Controller {
     /**
      * Deletes user found by id
      */
-    private deleteUser = async (req: Request, res: Response): Promise<any> => {
+    private deleteUser = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
 
         /**
          * Check if user can perform this action
          */
-        // if (req.user.id !== userId) {
-        //     return res.status(403).json(httpMessages.code403())
-        // }
+        if (!req.isAuthenticated()) {
+            return res.status(403).json(httpMessages.code403())
+        }
 
         /**
          * Find user
          */
         const [user, userErr] = await promisify(
-            UserServices.findOne('id', userId, false)
+            UserServices.findOne('id', userId)
         )
         if (userErr) {
             if (userErr.code === 404) {

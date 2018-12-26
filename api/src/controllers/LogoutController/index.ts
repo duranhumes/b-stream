@@ -2,11 +2,12 @@ import { Router, Response } from 'express'
 
 import Controller from '../Controller'
 import requireLogin from '../../middleware/requireLogin'
+import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 
 class LogoutController extends Controller {
     public router: Router
 
-    public constructor() {
+    constructor() {
         super()
 
         this.router = Router()
@@ -17,10 +18,13 @@ class LogoutController extends Controller {
         this.router.post('/', requireLogin, this.logout)
     }
 
-    private logout = (req: any, res: Response): any => {
-        req.session = null
+    private logout = (req: ExtendedRequest, res: Response): any => {
         req.logout()
-        req.session.destroy(() => res.sendStatus(200))
+        if (req.session) {
+            return req.session.destroy(() => res.sendStatus(200))
+        }
+
+        return res.sendStatus(200)
     }
 }
 
