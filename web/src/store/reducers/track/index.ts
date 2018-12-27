@@ -1,7 +1,7 @@
 import {
     TRACK_UPLOAD,
     TRACK_ERROR,
-    GET_TRACK,
+    STREAM_TRACK,
     GET_TRACKS,
 } from '../../actions/track/types'
 import {
@@ -9,12 +9,13 @@ import {
     genericErrorMsg,
     authErrorMsg,
     trackNotFoundErrorMsg,
+    fileToBigErrorMsg,
 } from './errorMessages'
 import { ErrorPayloadType, ReducerType } from '../../../interfaces'
 
 export default (state = {}, { type, payload }: ReducerType) => {
     switch (type) {
-        case GET_TRACK: {
+        case STREAM_TRACK: {
             return payload
         }
         case GET_TRACKS: {
@@ -24,13 +25,20 @@ export default (state = {}, { type, payload }: ReducerType) => {
             return payload
         }
         case TRACK_ERROR: {
-            const { status, fields }: Partial<ErrorPayloadType> = payload
+            const {
+                status,
+                message,
+                fields,
+            }: Partial<ErrorPayloadType> = payload
             switch (status) {
-                case 403: {
+                case 401: {
                     return authErrorMsg()
                 }
                 case 404: {
                     return trackNotFoundErrorMsg()
+                }
+                case 413: {
+                    return fileToBigErrorMsg({ message })
                 }
                 case 422: {
                     return badDataErrorMsg(fields)

@@ -1,3 +1,3 @@
 export * from './upload'
-export * from './getTrack'
+export * from './streamTrack'
 export * from './getTracks'

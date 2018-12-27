@@ -35,7 +35,7 @@ class Index extends React.Component<IndexProps, IndexState> {
                                 <p>{t.name}</p>
                                 <p>{t.description}</p>
                                 <audio
-                                    src={`${tracksEndpoint}/${t.id}`}
+                                    src={`${tracksEndpoint}/stream/${t.id}`}
                                     controls={true}
                                 />
                             </li>

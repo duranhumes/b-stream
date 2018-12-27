@@ -25,3 +25,10 @@ export const authErrorMsg = (overwrite?: any) => ({
     message: 'You need to be logged in to upload music',
     ...overwrite,
 })
+
+export const fileToBigErrorMsg = (overwrite?: any) => ({
+    fields: [],
+    error: true,
+    message: 'File to large',
+    ...overwrite,
+})
