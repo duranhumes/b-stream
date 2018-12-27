@@ -106,23 +106,12 @@ class Server {
             return next()
         })
 
-        router.get(
-            '/health',
-            (_: any, res: express.Response, next: express.NextFunction) => {
-                res.sendStatus(200)
-
-                return next()
-            }
-        )
-        router.get(
-            '/auth',
-            requireLogin,
-            (_: any, res: express.Response, next: express.NextFunction) => {
-                res.sendStatus(200)
-
-                return next()
-            }
-        )
+        router.get('/health', (_, res) => {
+            return res.sendStatus(204)
+        })
+        router.get('/auth', requireLogin, (_, res) => {
+            return res.sendStatus(204)
+        })
         router.use('/login', controllers.LoginController)
         router.use('/logout', controllers.LogoutController)
         router.use('/users', controllers.UserController)
