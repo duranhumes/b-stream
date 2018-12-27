@@ -2,6 +2,7 @@ import {
     BASIC_AUTH_ERROR,
     BASIC_AUTH_REGISTER,
     BASIC_AUTH_LOGIN,
+    LOGOUT,
 } from '../../actions/user/types'
 import {
     badDataErrorMsg,
@@ -19,6 +20,9 @@ export default (state = {}, { type, payload }: ReducerType) => {
         }
         case BASIC_AUTH_LOGIN: {
             return payload
+        }
+        case LOGOUT: {
+            return {}
         }
         case BASIC_AUTH_ERROR: {
             const {

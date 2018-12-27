@@ -1,11 +1,36 @@
 import * as React from 'react'
+import { bindActionCreators, Dispatch } from 'redux'
 import { connect } from 'react-redux'
 import Link from 'next/link'
+import Router from 'next/router'
 
 import './header.css'
+import Dropdown from './Dropdown'
+import * as userActions from '../../store/actions/user'
 
-class Header extends React.Component {
+class Header extends React.Component<any, any> {
+    state = {
+        isDropdownOpen: false,
+    }
+
+    handleLogout = (e: any) => {
+        e.preventDefault()
+
+        this.props.logout()
+        Router.push('/')
+    }
+
+    handleDropdown = (e: any) => {
+        e.preventDefault()
+
+        this.setState(({ isDropdownOpen }: any) => ({
+            isDropdownOpen: !isDropdownOpen,
+        }))
+    }
+
     render() {
+        const { user } = this.props
+        const { isDropdownOpen } = this.state
         return (
             <header>
                 <div className="header">
@@ -17,7 +42,7 @@ class Header extends React.Component {
                                 </Link>
                             </div>
                             <div className="header__left-nav-link">
-                                <Link href="/">
+                                <Link href="/collections">
                                     <a>Collection</a>
                                 </Link>
                             </div>
@@ -34,6 +59,7 @@ class Header extends React.Component {
                                 type="search"
                                 name="search"
                                 className="form-control"
+                                placeholder="Search for music..."
                             />
                         </div>
                     </div>
@@ -45,7 +71,23 @@ class Header extends React.Component {
                                 </a>
                             </div>
                             <div className="header__right-nav-user-profile">
-                                user
+                                {user.id ? (
+                                    <Dropdown
+                                        user={user}
+                                        isDropdownOpen={isDropdownOpen}
+                                        handleLogout={this.handleLogout}
+                                        handleDropdown={this.handleDropdown}
+                                    />
+                                ) : (
+                                    <>
+                                        <Link href="/login">
+                                            <a className="nav-link">Login</a>
+                                        </Link>
+                                        <Link href="/register">
+                                            <a className="nav-link">Register</a>
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -56,5 +98,10 @@ class Header extends React.Component {
 }
 
 const mapStateToProps = ({ user }: any) => ({ user })
+const mapDispatchToProps = (dispatch: Dispatch) =>
+    bindActionCreators(userActions, dispatch)
 
-export default connect(mapStateToProps)(Header)
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Header)
