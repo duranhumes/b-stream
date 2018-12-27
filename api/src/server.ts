@@ -106,8 +106,8 @@ class Server {
             return next()
         })
 
-        router.get('/health', (_, res) => res.sendStatus(204))
-        router.get('/auth', requireLogin, (_, res) => res.sendStatus(204))
+        router.get('/health', (_, res) => res.sendStatus(200))
+        router.get('/auth', requireLogin, (_, res) => res.sendStatus(200))
         router.use('/login', controllers.LoginController)
         router.use('/logout', controllers.LogoutController)
         router.use('/users', controllers.UserController)
