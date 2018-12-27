@@ -12,6 +12,7 @@ import { controllers } from './controllers'
 import { logger } from './utils/logging'
 import { passportConfig } from './middleware/passport'
 import { session } from './middleware/session'
+import requireLogin from './middleware/requireLogin'
 
 morgan.token('id', req => req.ip)
 
@@ -107,6 +108,15 @@ class Server {
 
         router.get(
             '/health',
+            (_: any, res: express.Response, next: express.NextFunction) => {
+                res.sendStatus(200)
+
+                return next()
+            }
+        )
+        router.get(
+            '/auth',
+            requireLogin,
             (_: any, res: express.Response, next: express.NextFunction) => {
                 res.sendStatus(200)
 

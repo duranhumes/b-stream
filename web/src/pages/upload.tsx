@@ -2,6 +2,7 @@ import * as React from 'react'
 import { bindActionCreators, Dispatch } from 'redux'
 import { connect } from 'react-redux'
 
+import withAuth from '../hoc/withAuth'
 import { Header, Wrapper } from '../components'
 import * as trackActions from '../store/actions/track'
 import { TrackUpload, TrackUploadProps } from '../interfaces'
@@ -202,8 +203,10 @@ const mergeProps = (state: any, dispatch: any) => ({
     ...dispatch,
 })
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-    mergeProps
-)(Upload)
+export default withAuth(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+        mergeProps
+    )(Upload)
+)
