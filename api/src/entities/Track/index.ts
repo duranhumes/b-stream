@@ -1,7 +1,8 @@
-import { Entity, Column } from 'typeorm'
+import { Entity, Column, ManyToOne } from 'typeorm'
 import { Length, IsOptional } from 'class-validator'
 
 import { Model } from '../Model'
+import { User } from '../User'
 
 export const allowedTrackFileExt = ['mp4', 'mp3']
 
@@ -55,8 +56,8 @@ export class Track extends Model {
 
     @ManyToMany(() => Genre, genre => genre.id)
     @JoinTable({ name: 'trackGenre' })
-    public genres: Genre[] | undefined
+    public genres: Genre[] | undefined*/
 
     @ManyToOne(() => User, user => user.id)
-    public user: User | undefined*/
+    public user: User | undefined
 }

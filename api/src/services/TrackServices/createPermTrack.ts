@@ -47,7 +47,6 @@ export const createPermTrack = async (trackData: TrackData) => {
 
     try {
         shell.mv(tempTrackFile, destTrackFile)
-        shell.rm(tempTrackFile)
     } catch (err) {
         logger('Create perm track error', err, 500)
 

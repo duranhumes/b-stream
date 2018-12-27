@@ -12,4 +12,5 @@ export default [
     'isDownloadable',
     'isExplicit',
     'tags',
+    'user',
 ]

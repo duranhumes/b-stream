@@ -11,6 +11,7 @@ import { TrackServices } from '../../services/TrackServices'
 import { logger } from '../../utils/logging'
 import { allowedTrackFileExt } from '../../entities/Track'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
+import requireLogin from '../../middleware/requireLogin'
 
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
@@ -28,6 +29,12 @@ class TrackController extends Controller {
     public routes() {
         this.router.get('/', this.getTracks)
         this.router.get(
+            '/stream/:id',
+            [...validationRules.streamTrack],
+            validationFunc,
+            this.streamTrack
+        )
+        this.router.get(
             '/:id',
             [...validationRules.getTrack],
             validationFunc,
@@ -37,6 +44,7 @@ class TrackController extends Controller {
             '/',
             [...validationRules.uploadTrack],
             validationFunc,
+            requireLogin,
             this.uploadTrack
         )
     }
@@ -59,6 +67,30 @@ class TrackController extends Controller {
     }
 
     private getTrack = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
+        const trackId = this.escapeString(req.params.id).trim()
+        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
+        const [foundTrack, foundTrackErr] = await promisify(
+            TrackServices.findOne('id', trackId, true, fieldsToRemove)
+        )
+        if (foundTrackErr) {
+            if (foundTrackErr.code === 404) {
+                logger(req.ip, foundTrackErr, 404)
+
+                return res.status(404).json(httpMessages.code404())
+            }
+
+            logger(req.ip, foundTrackErr, 500)
+
+            return res.status(500).json(httpMessages.code500())
+        }
+
+        return res.status(200).json(httpMessages.code200(foundTrack))
+    }
+
+    private streamTrack = async (
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
@@ -114,7 +146,7 @@ class TrackController extends Controller {
         }
 
         const filteredData = pick(req.body, TrackSchema)
-        const textFields = {}
+        const textFields = { user: req.user.id }
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
                 textFields[key] = this.escapeString(filteredData[key]).trim()

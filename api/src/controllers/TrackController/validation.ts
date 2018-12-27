@@ -4,6 +4,14 @@ import { param, validationResult, body } from 'express-validator/check'
 import { code422 } from '../../utils/httpMessages'
 
 export const validationRules = {
+    streamTrack: [
+        param('id')
+            .not()
+            .isEmpty()
+            .trim()
+            .escape()
+            .withMessage('is required for this endpoint'),
+    ],
     getTrack: [
         param('id')
             .not()
