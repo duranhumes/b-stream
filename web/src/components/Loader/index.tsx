@@ -1,7 +1,9 @@
 import * as React from 'react'
 
+import './loader.css'
+
 const Loader = () => (
-    <div className="d-flex ht-300 pos-relative align-items-center">
+    <div className="d-flex pos-relative align-items-center justify-content-center wd-100v ht-100v">
         <div className="sk-circle">
             <div className="sk-circle1 sk-child" />
             <div className="sk-circle2 sk-child" />
