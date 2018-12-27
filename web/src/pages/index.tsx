@@ -3,7 +3,6 @@ import { bindActionCreators, Dispatch } from 'redux'
 import { connect } from 'react-redux'
 import Link from 'next/link'
 
-import { Header, Wrapper } from '../components'
 import * as trackActions from '../store/actions'
 import { tracksEndpoint } from '../api/Endpoints'
 
@@ -53,28 +52,23 @@ class Index extends React.Component<IndexProps, IndexState> {
     render() {
         return (
             <>
-                <Header />
-                <Wrapper>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <h1>Index goes here</h1>
-                            <Link href="/login">
-                                <a className="btn btn-primary btn-sm">Login</a>
-                            </Link>
-                            <Link href="/register">
-                                <a className="btn btn-primary btn-sm">
-                                    Register
-                                </a>
-                            </Link>
-                        </div>
+                <div className="row">
+                    <div className="col-md-12">
+                        <h1>Index goes here</h1>
+                        <Link href="/login">
+                            <a className="btn btn-primary btn-sm">Login</a>
+                        </Link>
+                        <Link href="/register">
+                            <a className="btn btn-primary btn-sm">Register</a>
+                        </Link>
                     </div>
-                    <div className="row">
-                        <div className="col-md-12">
-                            <p>track</p>
-                            {this.renderTracks()}
-                        </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12">
+                        <p>track</p>
+                        {this.renderTracks()}
                     </div>
-                </Wrapper>
+                </div>
             </>
         )
     }

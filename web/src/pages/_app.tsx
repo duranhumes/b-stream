@@ -4,6 +4,7 @@ import { PageTransition } from 'next-page-transitions'
 import { Provider } from 'react-redux'
 
 import withRedux from '../hoc/withRedux'
+import { Header, Wrapper } from '../components'
 class MyApp extends App {
     static async getInitialProps({ Component, ctx }: any) {
         let pageProps = {}
@@ -31,7 +32,12 @@ class MyApp extends App {
                             exit: 0,
                         }}
                         loadingClassNames="loading-indicator">
-                        <Component {...pageProps} />
+                        <>
+                            <Header />
+                            <Wrapper>
+                                <Component {...pageProps} />
+                            </Wrapper>
+                        </>
                     </PageTransition>
                 </Provider>
             </Container>
