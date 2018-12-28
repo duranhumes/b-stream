@@ -1,6 +1,23 @@
 import * as uuid from 'uuid/v4'
 
 /**
+ * Check if object is plain or has extra properties
+ * like a date object.
+ *
+ * @param {object} obj
+ *
+ * @returns {boolean}
+ */
+export function isPlainObject(obj: object) {
+    return (
+        typeof obj === 'object' &&
+        obj !== null &&
+        obj.constructor === Object &&
+        Object.prototype.toString.call(obj) === '[object Object]'
+    )
+}
+
+/**
  *
  * @param {object} obj
  *
@@ -90,7 +107,33 @@ export function filterEntity(model: any, fields?: string[]): object {
      * and return the new array.
      */
     if (Array.isArray(model)) {
-        return model.map(m => reject(m, fieldsToExclude))
+        return model.map(m => {
+            for (const key in m) {
+                if (
+                    m[key] &&
+                    typeof m[key] === 'object' &&
+                    !(m[key] instanceof Date)
+                ) {
+                    Object.assign(m, {
+                        [key]: filterEntity(m[key], fieldsToExclude),
+                    })
+                }
+            }
+
+            return reject(m, fieldsToExclude)
+        })
+    }
+
+    for (const key in model) {
+        if (
+            model[key] &&
+            typeof model[key] === 'object' &&
+            !(model[key] instanceof Date)
+        ) {
+            Object.assign(model, {
+                [key]: filterEntity(model[key], fieldsToExclude),
+            })
+        }
     }
 
     return reject(model, fieldsToExclude)
