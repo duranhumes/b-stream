@@ -1,9 +1,9 @@
 import * as React from 'react'
 import Router from 'next/router'
 
-import { Loader } from '../components'
 import request from '../utils/request'
-import { authEndpoint } from '../api/Endpoints'
+import { Loader } from '../components'
+import { usersEndpoint } from '../api/Endpoints'
 
 function withAuth(Page: any) {
     return class WithAuth extends React.Component<any, any> {
@@ -20,7 +20,7 @@ function withAuth(Page: any) {
 
             const r = request()
             try {
-                await r.get(authEndpoint)
+                await r.get(`${usersEndpoint}/me`)
             } catch (err) {
                 return Router.push('/login')
             }

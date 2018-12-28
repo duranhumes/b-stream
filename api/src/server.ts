@@ -12,7 +12,6 @@ import { controllers } from './controllers'
 import { logger } from './utils/logging'
 import { passportConfig } from './middleware/passport'
 import { session } from './middleware/session'
-import requireLogin from './middleware/requireLogin'
 
 morgan.token('id', req => req.ip)
 
@@ -107,7 +106,6 @@ class Server {
         })
 
         router.get('/health', (_, res) => res.sendStatus(200))
-        router.get('/auth', requireLogin, (_, res) => res.sendStatus(200))
         router.use('/login', controllers.LoginController)
         router.use('/logout', controllers.LogoutController)
         router.use('/users', controllers.UserController)

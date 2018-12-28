@@ -2,7 +2,6 @@ const BASE_URL = 'http://localhost:8080/v1'
 
 export const baseEndpoint = BASE_URL
 export const healthEndpoint = `${BASE_URL}/health`
-export const authEndpoint = `${BASE_URL}/auth`
 export const usersEndpoint = `${BASE_URL}/users`
 export const loginEndpoint = `${BASE_URL}/login`
 export const logoutEndpoint = `${BASE_URL}/logout`
