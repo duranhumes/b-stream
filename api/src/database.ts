@@ -1,6 +1,11 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { createConnection, ConnectionOptions, Connection } from 'typeorm'
+import {
+    createConnection,
+    ConnectionOptions,
+    Connection,
+    getManager,
+} from 'typeorm'
 
 import { logger } from './utils/logging'
 
@@ -71,18 +76,21 @@ class Database {
 
     public async clearTables() {
         const entities = this.connection.entityMetadatas
+        const manager = getManager()
+
+        await manager.query('SET FOREIGN_KEY_CHECKS=0;')
 
         for (const entity of entities) {
             const repository = await this.connection.getRepository(entity.name)
             const query = `TRUNCATE TABLE \`${entity.tableName}\`;`
             try {
-                await repository.query('SET FOREIGN_KEY_CHECKS=0;')
                 await repository.query(query)
-                await repository.query('SET FOREIGN_KEY_CHECKS=1;')
             } catch (err) {
                 // console.log(err)
             }
         }
+
+        await manager.query('SET FOREIGN_KEY_CHECKS=1;')
     }
 
     /**
