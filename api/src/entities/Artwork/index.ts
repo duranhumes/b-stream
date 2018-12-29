@@ -1,6 +1,7 @@
-import { Column } from 'typeorm'
+import { Column, BeforeInsert, BeforeUpdate } from 'typeorm'
 
 import { Model } from '../Model'
+import { validateData } from '../helpers'
 
 export abstract class Artwork extends Model {
     @Column({ type: 'text', nullable: false })
@@ -11,4 +12,10 @@ export abstract class Artwork extends Model {
 
     @Column({ type: 'int', width: 11, nullable: false })
     public height: string | undefined
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async handleBeforeInsert() {
+        await validateData<Artwork>(this)
+    }
 }

@@ -1,9 +1,16 @@
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
+import {
+    Entity,
+    Column,
+    ManyToMany,
+    JoinTable,
+    BeforeInsert,
+    BeforeUpdate,
+} from 'typeorm'
 import { Length, IsOptional } from 'class-validator'
 
 import { Model } from '../Model'
-import { Track } from '../Track'
 import { Genre } from '../Genre'
+import { validateData } from '../helpers'
 
 @Entity('artist')
 export class Artist extends Model {
@@ -18,11 +25,17 @@ export class Artist extends Model {
     @Column({ type: 'int', width: 11, nullable: false, default: 0 })
     public popularity: number | undefined
 
-    @ManyToMany(() => Track, track => track.artist)
+    /*@ManyToMany(() => Track, track => track.artist)
     @JoinTable({ name: 'artistTracks' })
-    public tracks: Track[] | undefined
+    public tracks: Track[] | undefined*/
 
     @ManyToMany(() => Genre, genre => genre.id)
     @JoinTable({ name: 'artistGenre' })
     public genres: Genre[] | undefined
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async handleBeforeInsert() {
+        await validateData<Artist>(this)
+    }
 }

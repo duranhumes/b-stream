@@ -58,8 +58,8 @@ export const createTempTrack = async (
             readable.destroy()
         })
 
-    fs.exists(tempTrackFile, exists => {
-        if (!exists) {
+    fs.access(tempTrackFile, fs.constants.F_OK, err => {
+        if (err) {
             Promise.reject({
                 code: 404,
                 message: `${trackData.fileName}.${

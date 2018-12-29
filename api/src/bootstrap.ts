@@ -1,41 +1,111 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import 'dotenv-safe/config'
+import 'reflect-metadata'
+import { normalize, resolve } from 'path'
+import { mkdir } from 'shelljs'
+import { createServer } from 'http'
 
-import database from './database'
+import Database from './Database'
+import { logger } from './utils/logging'
 
-const projectDirBasePath = path.normalize(path.resolve(__dirname, '..'))
+const projectDirBasePath = normalize(resolve(__dirname, '..'))
+const port = Number(process.env.PORT) || 8080
 
-class Bootstrap {
-    public async init() {
-        this.createStorageDir()
-        this.createTempDir()
-        this.createLogsDir()
+let httpServer = createServer()
+async function main() {
+    const dirs = [
+        `${projectDirBasePath}/storage`,
+        `${projectDirBasePath}/temp`,
+        `${projectDirBasePath}/logs`,
+    ]
+    mkdir('-p', dirs)
 
-        fs.closeSync(0)
+    await Database.init()
 
-        await database.init()
+    setTimeout(() => {
+        const server = require('./Server').default
+        server.set('port', port)
+        httpServer = createServer(server)
+        httpServer.listen(port)
+        httpServer.on('error', onError)
+        console.info(
+            `\n=> ${process.env.APP_NAME} is ready for use on port ${port} <=`
+        )
+    })
+}
+
+function onError(error: NodeJS.ErrnoException): void {
+    console.error('Error in Index: ', error)
+
+    if (error.syscall !== 'listen') {
+        throw error
     }
-
-    private createStorageDir() {
-        const storageDir = `${projectDirBasePath}/storage`
-        if (!fs.existsSync(storageDir)) {
-            fs.mkdirSync(storageDir)
-        }
-    }
-
-    private createTempDir() {
-        const tempDir = `${projectDirBasePath}/temp`
-        if (!fs.existsSync(tempDir)) {
-            fs.mkdirSync(tempDir)
-        }
-    }
-
-    private createLogsDir() {
-        const logsDir = `${projectDirBasePath}/logs`
-        if (!fs.existsSync(logsDir)) {
-            fs.mkdirSync(logsDir)
-        }
+    const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`
+    switch (error.code) {
+        case 'EACCES':
+            console.error(`${bind} requires elevated privileges`)
+            closeDBConnection()
+            closeServer()
+            process.exit(1)
+            break
+        case 'EADDRINUSE':
+            console.error(`${bind} is already in use`)
+            closeDBConnection()
+            closeServer()
+            process.exit(1)
+            break
+        default:
+            throw error
     }
 }
 
-export default new Bootstrap()
+function closeDBConnection() {
+    Database.closeConnection().then(() => console.log('DB connection closed.'))
+}
+
+function closeServer() {
+    httpServer.close()
+}
+
+process.on(
+    'uncaughtException',
+    (exception: NodeJS.ErrnoException): void => {
+        logger('uncaughtException in index', exception, 500)
+        console.error('uncaughtException: ', exception)
+        closeDBConnection()
+        closeServer()
+
+        process.exit(1)
+    }
+)
+
+process.on(
+    'unhandledRejection',
+    (reason: any, promise: any): void => {
+        logger('unhandledRejection in index', { reason, promise }, 500)
+        console.error('unhandledRejection: ', promise, ' reason: ', reason)
+        closeDBConnection()
+        closeServer()
+
+        process.exit(1)
+    }
+)
+
+// Clean up on nodemon restarts
+process.once('SIGUSR2', () => {
+    closeDBConnection()
+    process.kill(process.pid, 'SIGUSR2')
+})
+
+process.on('SIGINT', () => {
+    closeDBConnection()
+    closeServer()
+    process.exit(0)
+})
+
+process.on('SIGTERM', () => {
+    closeDBConnection()
+    closeServer()
+    process.exit(0)
+})
+
+export default main

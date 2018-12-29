@@ -1,4 +1,4 @@
-import { Entity, Column, OneToMany } from 'typeorm'
+import { Entity, Column, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm'
 import {
     IsEmail,
     IsFQDN,
@@ -9,6 +9,9 @@ import {
 
 import { Model } from '../Model'
 import { Track } from '../Track'
+import { hashPassword } from '../../auth/password'
+import { promisify } from '../../utils'
+import { validateData } from '../helpers'
 
 export const passwordRegex = new RegExp(
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,30}$/,
@@ -31,7 +34,7 @@ export class User extends Model {
     public email: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: false })
-    @Length(8, 30)
+    // @Length(8, 60)
     public password: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -49,4 +52,72 @@ export class User extends Model {
 
     @OneToMany(() => Track, track => track.user)
     public tracks: Track[] | undefined
+
+    @BeforeInsert()
+    async handleBeforeInsert() {
+        if (this.userName) {
+            this.userName = this.userName.replace(/\s+/g, '-').toLowerCase()
+        }
+        if (this.email) {
+            this.email = this.email.toLowerCase()
+        }
+        if (
+            this.password &&
+            this.password !== String(process.env.DEFAULT_OAUTH_PASSWORD)
+        ) {
+            if (validatePassword(this.password)) {
+                const [hashedPassword, hashedPasswordErr] = await promisify(
+                    hashPassword(this.password)
+                )
+                if (hashedPasswordErr) {
+                    throw new Error('In password hash.')
+                }
+
+                this.password = hashedPassword
+            } else {
+                throw new TypeError(passwordValidationMessage)
+            }
+        }
+
+        await validateData<User>(this)
+    }
+
+    @BeforeUpdate()
+    async handleBeforeUpdate() {
+        if (this.userName) {
+            this.userName = this.userName.replace(/\s+/g, '-').toLowerCase()
+        }
+        if (this.email) {
+            this.email = this.email.toLowerCase()
+        }
+        if (this.password) {
+            // Skip password hashing as its most likely already hashed
+            if (this.password.startsWith('$argon2id')) {
+                // const currentData = {}
+                // Object.assign(currentData, this)
+                // await validateData<User>(this)
+
+                return
+            }
+
+            if (validatePassword(this.password)) {
+                const [hashedPassword, hashedPasswordErr] = await promisify(
+                    hashPassword(this.password)
+                )
+                if (hashedPasswordErr) {
+                    throw new Error('In password hash.')
+                }
+
+                this.password = hashedPassword
+            } else {
+                throw new TypeError(passwordValidationMessage)
+            }
+        }
+
+        // await validateData<User>(this)
+    }
+}
+
+function validatePassword(password: string) {
+    return passwordRegex.test(password)
 }

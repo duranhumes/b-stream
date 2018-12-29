@@ -1,15 +1,16 @@
-import { Entity, Column, ManyToOne } from 'typeorm'
+import { Entity, Column, ManyToOne, BeforeInsert, BeforeUpdate } from 'typeorm'
 import { Length, IsOptional } from 'class-validator'
 
 import { Model } from '../Model'
 import { User } from '../User'
+import { validateData } from '../helpers'
 
 export const allowedTrackFileExt = ['mp4', 'mp3']
 
 @Entity('track')
 export class Track extends Model {
     @Column({ type: 'varchar', length: 255, nullable: false })
-    @Length(3, 355)
+    @Length(3, 255)
     public name: string | undefined
 
     @Column({ type: 'text', nullable: true })
@@ -60,4 +61,10 @@ export class Track extends Model {
 
     @ManyToOne(() => User, user => user.id)
     public user: User | undefined
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async handleBeforeInsert() {
+        await validateData<Track>(this)
+    }
 }

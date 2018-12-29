@@ -1,7 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { createConnection, ConnectionOptions, Connection } from 'typeorm'
-import * as rimraf from 'rimraf'
 
 import { logger } from './utils/logging'
 
@@ -20,6 +19,7 @@ class Database {
         this.connectionOptions = {
             database,
             type: 'mysql',
+            maxQueryExecutionTime: 800,
             entities: ['src/entities/**/index.ts'],
             subscribers: ['src/subscribers/**/index.ts'],
             migrations: ['src/migrations/*.ts'],
@@ -74,7 +74,14 @@ class Database {
 
         for (const entity of entities) {
             const repository = await this.connection.getRepository(entity.name)
-            await repository.query(`TRUNCATE TABLE ${entity.tableName};`)
+            const query = `TRUNCATE TABLE \`${entity.tableName}\`;`
+            try {
+                await repository.query('SET FOREIGN_KEY_CHECKS=0;')
+                await repository.query(query)
+                await repository.query('SET FOREIGN_KEY_CHECKS=1;')
+            } catch (err) {
+                // console.log(err)
+            }
         }
     }
 
@@ -84,11 +91,11 @@ class Database {
      */
     private async genModelSchemas() {
         const schemasDir = `${projectDirBasePath}/src/schemas`
-        rimraf(`${schemasDir}/*`, (err: any) => {
-            if (err) {
-                console.error(err)
-
-                process.exit(0)
+        try {
+            const files = fs.readdirSync(schemasDir)
+            for (const file of files) {
+                const filePath = path.normalize(path.join(schemasDir, file))
+                fs.unlinkSync(filePath)
             }
 
             const entities = this.connection.entityMetadatas
@@ -105,15 +112,19 @@ class Database {
                 const schemaFile = `${schemasDir}/${fileName}Schema.ts`
                 try {
                     fs.writeFileSync(schemaFile, template)
-
-                    console.info(`${entity.name} schema created!`)
                 } catch (err) {
-                    console.log(err)
+                    console.error(err)
 
                     process.exit(0)
                 }
             }
-        })
+
+            console.info('=> Entity schemas created!')
+        } catch (err) {
+            console.error(err)
+
+            process.exit(0)
+        }
     }
 }
 

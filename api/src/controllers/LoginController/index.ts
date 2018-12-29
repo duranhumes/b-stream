@@ -1,7 +1,7 @@
 import { Router, Response } from 'express'
 
 import Controller from '../Controller'
-import { pick, promisify, filterEntity } from '../../utils'
+import { promisify, filterEntity } from '../../utils'
 import { logger } from '../../utils/logging'
 import { verifyPassword } from '../../auth/password'
 import { UserServices } from '../../services/UserServices'
@@ -37,9 +37,10 @@ class LoginController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        /**
-         * Build request object
-         */
+        interface Login {
+            email: string
+            password: string
+        }
         const data = {}
         for (const key in req.body) {
             if (req.body.hasOwnProperty(key)) {
@@ -47,12 +48,7 @@ class LoginController extends Controller {
             }
         }
 
-        /**
-         * Dont allow other fields other
-         * than the specified fields below
-         */
-        const allowedFields = ['email', 'password']
-        const { email, password } = pick(data, allowedFields)
+        const { email, password } = data as Login
 
         /**
          * Check if user exists, if not return 404
@@ -71,10 +67,6 @@ class LoginController extends Controller {
             logger(req.ip, userErr, 500)
 
             return res.status(500).json(httpMessages.code500())
-        }
-
-        if (!user) {
-            return res.status(404).json(httpMessages.code404())
         }
 
         /**
@@ -108,14 +100,9 @@ class LoginController extends Controller {
                 return res.status(500).json(httpMessages.code500())
             }
 
-            const response = {
-                ...filteredUserObj,
-            }
-
             req.session!.user = filteredUserObj.id
-
-            // @ts-ignore
-            res.setHeader('XSRF-TOKEN', req.sessionID)
+            res.setHeader('XSRF-TOKEN', String(req.sessionID))
+            const response = filteredUserObj
             return res.status(200).json(httpMessages.code200(response))
         })
 

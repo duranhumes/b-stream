@@ -1,8 +1,16 @@
-import { Entity, Column, ManyToMany, JoinTable } from 'typeorm'
+import {
+    Entity,
+    Column,
+    ManyToMany,
+    JoinTable,
+    BeforeInsert,
+    BeforeUpdate,
+} from 'typeorm'
 import { Length, IsOptional } from 'class-validator'
 
 import { Model } from '../Model'
 import { Track } from '../Track'
+import { validateData } from '../helpers'
 
 @Entity('genre')
 export class Genre extends Model {
@@ -17,4 +25,10 @@ export class Genre extends Model {
     @ManyToMany(() => Track, track => track.id)
     @JoinTable({ name: 'trackGenre' })
     public tracks: Track[] | undefined
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async handleBeforeInsert() {
+        await validateData<Genre>(this)
+    }
 }

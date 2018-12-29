@@ -9,11 +9,21 @@ import { isEmpty, promisify, filterEntity } from '../../utils'
  *
  * @returns {array} tracks
  */
-type FindAllType = (filter?: boolean, fields?: string[]) => Promise<object>
-export const findAll: FindAllType = async (filter = true, fields = []) => {
+type FindAllType = (
+    query?: {
+        [key: string]: any
+    },
+    filter?: boolean,
+    fields?: string[]
+) => Promise<object>
+export const findAll: FindAllType = async (
+    query = {},
+    filter = true,
+    fields = []
+) => {
     const manager = getManager()
 
-    const [tracks, tracksErr] = await promisify(manager.find(Track, {}))
+    const [tracks, tracksErr] = await promisify(manager.find(Track, query))
     if (tracksErr) {
         logger('Find All Track Service', tracksErr, 500)
 

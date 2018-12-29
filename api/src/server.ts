@@ -10,8 +10,7 @@ import * as busboyBodyParser from 'busboy-body-parser'
 
 import { controllers } from './controllers'
 import { logger } from './utils/logging'
-import { passportConfig } from './middleware/passport'
-import { session } from './middleware/session'
+import { passportConfig, redisSession } from './middleware'
 
 morgan.token('id', req => req.ip)
 
@@ -68,7 +67,7 @@ class Server {
             })
         )
         passportConfig()
-        this.app.use(session())
+        this.app.use(redisSession())
         this.app.use(passport.initialize())
         this.app.use(passport.session())
     }

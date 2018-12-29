@@ -1,5 +1,4 @@
 import * as chai from 'chai'
-import * as chaiPromises from 'chai-as-promised'
 import * as faker from 'faker'
 
 import { create } from '../create'
@@ -7,7 +6,6 @@ import { update } from '../update'
 import { findOne } from '../findOne'
 import { promisify } from '../../../utils'
 
-chai.use(chaiPromises)
 const expect = chai.expect
 
 describe('=> Update user service <=', () => {

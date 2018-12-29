@@ -1,4 +1,4 @@
-import { Router, Response } from 'express'
+import { Router, Response, NextFunction } from 'express'
 
 import Controller from '../Controller'
 import * as httpMessages from '../../utils/httpMessages'
@@ -9,7 +9,7 @@ import seedUsers from '../../database/seeders/seedUsers'
 import { promisify, pick } from '../../utils'
 import UserSchema from '../../schemas/UserSchema'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
-import requireLogin from '../../middleware/requireLogin'
+import { requireLogin, logout } from '../../middleware'
 
 class UserController extends Controller {
     public router: Router
@@ -54,7 +54,8 @@ class UserController extends Controller {
             [...validationRules.deleteUser],
             validationFunc,
             requireLogin,
-            this.deleteUser
+            this.deleteUser,
+            logout
         )
     }
 
@@ -85,9 +86,10 @@ class UserController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        const existingUsersCount = users.length
+        const message = `${amountOfUsers} users created. There are ${
+            users.length
+        } users now in DB.`
 
-        const message = `${amountOfUsers} users created. There are ${existingUsersCount} users now in DB.`
         return res.status(200).json(httpMessages.code200({}, message))
     }
 
@@ -117,7 +119,6 @@ class UserController extends Controller {
         const [userId, userIdErr] = await promisify(
             UserServices.create(filteredData)
         )
-
         if (userIdErr) {
             if (Number(userIdErr.code) === 409) {
                 logger(req.ip, userIdErr, 409)
@@ -130,10 +131,6 @@ class UserController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        if (!userId) {
-            return res.status(500).json(httpMessages.code500())
-        }
-
         /**
          * Find new user
          */
@@ -143,10 +140,6 @@ class UserController extends Controller {
         if (newUserErr) {
             logger(req.ip, newUserErr, 500)
 
-            return res.status(500).json(httpMessages.code500())
-        }
-
-        if (!newUser) {
             return res.status(500).json(httpMessages.code500())
         }
 
@@ -163,15 +156,9 @@ class UserController extends Controller {
                 return res.status(500).json(httpMessages.code500())
             }
 
-            // Return user obj
-            const response = {
-                ...newUser,
-            }
-
             req.session!.user = newUser.id
-
-            // @ts-ignore
-            res.setHeader('XSRF-TOKEN', req.sessionID)
+            res.setHeader('XSRF-TOKEN', String(req.sessionID))
+            const response = newUser
             return res.status(201).json(httpMessages.code201(response))
         })
 
@@ -186,7 +173,6 @@ class UserController extends Controller {
         res: Response
     ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
-
         const [user, userErr] = await promisify(
             UserServices.findOne('id', userId)
         )
@@ -236,34 +222,27 @@ class UserController extends Controller {
             return res.status(403).json(httpMessages.code403())
         }
 
-        /**
-         * Find user
-         */
-        const [user, userErr] = await promisify(
+        const [originalUser, originalUserErr] = await promisify(
             UserServices.findOne('id', userId, false)
         )
-        if (userErr) {
-            if (userErr.code === 404) {
-                logger(req.ip, userErr, 404)
+        if (originalUserErr) {
+            if (originalUserErr.code === 404) {
+                logger(req.ip, originalUserErr, 404)
 
                 return res.status(404).json(httpMessages.code404())
             }
 
-            logger(req.ip, userErr, 500)
+            logger(req.ip, originalUserErr, 500)
 
             return res.status(500).json(httpMessages.code500())
         }
 
-        if (!user) {
-            return res.status(404).json(httpMessages.code404())
-        }
-
         // Filter sent data based on schema
         const filteredData = pick(req.body, UserSchema)
-        const data = {}
+        const newData = {}
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
-                data[key] = this.escapeString(filteredData[key]).trim()
+                newData[key] = this.escapeString(filteredData[key]).trim()
             }
         }
 
@@ -271,16 +250,12 @@ class UserController extends Controller {
          * Save updated user
          */
         const [updatedUser, updatedUserErr] = await promisify(
-            UserServices.update(user, data)
+            UserServices.update(originalUser, newData)
         )
         if (updatedUserErr) {
             logger(req.ip, updatedUserErr, 500)
 
             return res.status(500).json(httpMessages.code500())
-        }
-
-        if (!updatedUser) {
-            return res.status(404).json(httpMessages.code404())
         }
 
         return res
@@ -295,7 +270,8 @@ class UserController extends Controller {
      */
     private deleteUser = async (
         req: ExtendedRequest,
-        res: Response
+        res: Response,
+        next: NextFunction
     ): Promise<any> => {
         const userId = this.escapeString(req.params.id).trim()
 
@@ -325,7 +301,6 @@ class UserController extends Controller {
         if (!user) {
             return res.status(404).json(httpMessages.code404())
         }
-
         /**
          * Remove user
          */
@@ -338,7 +313,7 @@ class UserController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        return res.status(204).json(httpMessages.code204({}))
+        return next()
     }
 }
 

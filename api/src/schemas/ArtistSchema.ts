@@ -5,6 +5,5 @@ export default [
     'name',
     'description',
     'popularity',
-    'tracks',
     'genres',
 ]

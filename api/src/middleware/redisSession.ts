@@ -15,7 +15,7 @@ redisClient.on('error', err => {
     process.exit(1)
 })
 
-export const session = () =>
+export const redisSession = () =>
     expressSession({
         genid: () => uuid(),
         name: String(process.env.REDIS_SESSION_NAME),

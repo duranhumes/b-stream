@@ -8,5 +8,4 @@ export default [
     'timesPlayed',
     'trackNumber',
     'tags',
-    'tracks',
 ]

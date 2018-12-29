@@ -20,6 +20,14 @@ export const validationRules = {
             .escape()
             .withMessage('is required for this endpoint'),
     ],
+    getUserTracks: [
+        param('id')
+            .not()
+            .isEmpty()
+            .trim()
+            .escape()
+            .withMessage('is required for this endpoint'),
+    ],
     uploadTrack: [
         body('name')
             .not()

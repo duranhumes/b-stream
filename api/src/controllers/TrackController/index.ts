@@ -11,7 +11,7 @@ import { TrackServices } from '../../services/TrackServices'
 import { logger } from '../../utils/logging'
 import { allowedTrackFileExt } from '../../entities/Track'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
-import requireLogin from '../../middleware/requireLogin'
+import { requireLogin } from '../../middleware'
 
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
@@ -28,6 +28,12 @@ class TrackController extends Controller {
 
     public routes() {
         this.router.get('/', this.getTracks)
+        this.router.get(
+            '/user/:id',
+            [...validationRules.getUserTracks],
+            validationFunc,
+            this.getUserTracks
+        )
         this.router.get(
             '/stream/:id',
             [...validationRules.streamTrack],
@@ -49,13 +55,35 @@ class TrackController extends Controller {
         )
     }
 
+    private getUserTracks = async (
+        req: ExtendedRequest,
+        res: Response
+    ): Promise<any> => {
+        const userId = this.escapeString(req.params.id).trim()
+        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
+        const [tracks, tracksErr] = await promisify(
+            TrackServices.findAll(
+                { userId, relations: ['user'] },
+                true,
+                fieldsToRemove
+            )
+        )
+        if (tracksErr) {
+            logger(req.ip, tracksErr, 500)
+
+            return res.status(500).json(httpMessages.code500())
+        }
+
+        return res.status(200).json(httpMessages.code200(tracks))
+    }
+
     private getTracks = async (
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
         const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [tracks, tracksErr] = await promisify(
-            TrackServices.findAll(true, fieldsToRemove)
+            TrackServices.findAll({}, true, fieldsToRemove)
         )
         if (tracksErr) {
             logger(req.ip, tracksErr, 500)
@@ -112,27 +140,31 @@ class TrackController extends Controller {
 
         const { name, fileName, fileSize, fileExt } = foundTrack
         const trackFile = `${storageDir}/${fileName}.${fileExt}`
-        fs.exists(trackFile, exists => {
-            if (exists) {
-                res.writeHead(200, {
-                    'Content-Type': `audio/${fileExt}`,
-                    'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
-                    'Content-Length': fileSize,
-                })
-                const stream = fs.createReadStream(trackFile)
-                stream.on('error', error => {
-                    logger(`${fileName}.${fileExt} stream error`, error, 404)
-                    res.writeHead(404, 'Not Found')
+        fs.access(trackFile, fs.constants.F_OK, err => {
+            if (err) {
+                res.writeHead(404, 'Not Found')
 
-                    return res.end()
-                })
-
-                stream.on('end', () => {
-                    return res.end()
-                })
-
-                stream.pipe(res)
+                return res.end()
             }
+
+            res.writeHead(200, {
+                'Content-Type': `audio/${fileExt}`,
+                'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
+                'Content-Length': fileSize,
+            })
+            const stream = fs.createReadStream(trackFile)
+            stream.on('error', error => {
+                logger(`${fileName}.${fileExt} stream error`, error, 404)
+                res.writeHead(404, 'Not Found')
+
+                return res.end()
+            })
+
+            stream.on('end', () => {
+                return res.end()
+            })
+
+            stream.pipe(res)
         })
     }
 
@@ -209,7 +241,7 @@ class TrackController extends Controller {
             return res.status(500).json(httpMessages.code500())
         }
 
-        res.status(201).json(httpMessages.code201(foundTrack))
+        return res.status(201).json(httpMessages.code201(foundTrack))
     }
 }
 
