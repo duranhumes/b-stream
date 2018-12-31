@@ -85,9 +85,6 @@ class LoginController {
 
         /**
          * Login user, send user info back
-         * along with jsonwebtoken as a way to
-         * verify who the user is in
-         * subsequent requests
          */
         const filteredUserObj: any = filterEntity(user)
         req.login(filteredUserObj.id, (err: any) => {
@@ -99,8 +96,8 @@ class LoginController {
 
             req.session!.user = filteredUserObj.id
             res.setHeader('XSRF-TOKEN', String(req.sessionID))
-            const response = filteredUserObj
-            return res.status(200).json(httpMessages.code200(response))
+
+            return res.status(200).json(httpMessages.code200(filteredUserObj))
         })
 
         return

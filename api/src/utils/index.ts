@@ -91,53 +91,45 @@ export function reject(obj: object, keys: string[]) {
 
 /**
  *
- * @param {Model} model
+ * @param {object} entity
  * @param {array} fields
  *
- * @returns An object with all model
+ * @returns An object with all entity
  * properties except fields specified
  */
-export function filterEntity(model: any, fields?: string[]): object {
-    let fieldsToExclude = ['password']
-    if (fields) {
-        fieldsToExclude = [...fieldsToExclude, ...fields]
+export function filterEntity(
+    entity: object = {},
+    fields: string[] = []
+): object {
+    const fieldsToExclude = ['password'].concat(fields)
+
+    function recurse(obj: object = {}) {
+        for (const key in obj) {
+            if (obj[key] && typeof obj[key] === 'object') {
+                Object.assign(obj, {
+                    [key]: filterEntity(obj[key], fieldsToExclude),
+                })
+            }
+        }
+
+        return obj
     }
 
     /**
-     * If model param is an array of models loop through
+     * If entity param is an array of entities loop through
      * and return the new array.
      */
-    if (Array.isArray(model)) {
-        return model.map(m => {
-            for (const key in m) {
-                if (
-                    m[key] &&
-                    typeof m[key] === 'object' &&
-                    !(m[key] instanceof Date)
-                ) {
-                    Object.assign(m, {
-                        [key]: filterEntity(m[key], fieldsToExclude),
-                    })
-                }
-            }
+    if (Array.isArray(entity)) {
+        return entity.map(e => {
+            Object.assign(e, recurse(e))
 
-            return reject(m, fieldsToExclude)
+            return reject(e, fieldsToExclude)
         })
     }
 
-    for (const key in model) {
-        if (
-            model[key] &&
-            typeof model[key] === 'object' &&
-            !(model[key] instanceof Date)
-        ) {
-            Object.assign(model, {
-                [key]: filterEntity(model[key], fieldsToExclude),
-            })
-        }
-    }
+    Object.assign(entity, recurse(entity))
 
-    return reject(model, fieldsToExclude)
+    return reject(entity, fieldsToExclude)
 }
 
 /**

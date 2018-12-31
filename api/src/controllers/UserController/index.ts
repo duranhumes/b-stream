@@ -142,9 +142,6 @@ class UserController {
 
         /**
          * Login user, send user info back
-         * along with jsonwebtoken as a way to
-         * verify who the user is in
-         * subsequent requests
          */
         req.login(newUser.id, (err: any) => {
             if (err) {
@@ -155,8 +152,8 @@ class UserController {
 
             req.session!.user = newUser.id
             res.setHeader('XSRF-TOKEN', String(req.sessionID))
-            const response = newUser
-            return res.status(201).json(httpMessages.code201(response))
+
+            return res.status(201).json(httpMessages.code201(newUser))
         })
 
         return

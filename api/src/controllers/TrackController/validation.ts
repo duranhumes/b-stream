@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { param, validationResult, body } from 'express-validator/check'
 
 import { code422 } from '../../utils/httpMessages'
+import TrackSchema from '../../schemas/TrackSchema'
 
 export const validationRules = {
     streamTrack: [
@@ -29,6 +30,11 @@ export const validationRules = {
             .withMessage('is required for this endpoint'),
     ],
     uploadTrack: [
+        ...TrackSchema.map((field: string) =>
+            body(field)
+                .escape()
+                .trim()
+        ),
         body('name')
             .not()
             .isEmpty()

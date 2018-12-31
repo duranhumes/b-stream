@@ -3,9 +3,15 @@ import { body, param, validationResult, query } from 'express-validator/check'
 
 import { code422 } from '../../utils/httpMessages'
 import { passwordRegex, passwordValidationMessage } from '../../entities/User'
+import UserSchema from '../../schemas/UserSchema'
 
 export const validationRules = {
     createUser: [
+        ...UserSchema.map((field: string) =>
+            body(field)
+                .escape()
+                .trim()
+        ),
         body('userName')
             .not()
             .isEmpty()
@@ -39,6 +45,7 @@ export const validationRules = {
             .withMessage('is required for this endpoint'),
     ],
     updateUser: [
+        ...UserSchema.map((field: string) => body(field).escape()),
         param('id')
             .not()
             .isEmpty()

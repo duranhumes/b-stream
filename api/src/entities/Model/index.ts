@@ -3,6 +3,7 @@ import {
     UpdateDateColumn,
     CreateDateColumn,
     BeforeInsert,
+    AfterLoad,
 } from 'typeorm'
 
 import { formattedUUID } from '../../utils'
@@ -20,5 +21,11 @@ export abstract class Model {
     @BeforeInsert()
     beforeInsert() {
         this.id = formattedUUID()
+    }
+
+    @AfterLoad()
+    handleAfterLoad() {
+        this.createdAt = String(this.createdAt)
+        this.updatedAt = String(this.updatedAt)
     }
 }

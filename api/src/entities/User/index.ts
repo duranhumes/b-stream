@@ -34,7 +34,7 @@ export class User extends Model {
     public email: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: false })
-    // @Length(8, 60)
+    // @Length(8, 30)
     public password: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -93,9 +93,7 @@ export class User extends Model {
         if (this.password) {
             // Skip password hashing as its most likely already hashed
             if (this.password.startsWith('$argon2id')) {
-                // const currentData = {}
-                // Object.assign(currentData, this)
-                // await validateData<User>(this)
+                await validateData<User>(this)
 
                 return
             }
@@ -114,7 +112,7 @@ export class User extends Model {
             }
         }
 
-        // await validateData<User>(this)
+        await validateData<User>(this)
     }
 }
 
