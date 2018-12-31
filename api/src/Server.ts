@@ -9,8 +9,13 @@ import * as busboy from 'connect-busboy'
 import * as busboyBodyParser from 'busboy-body-parser'
 
 import { controllers } from './controllers'
-import { logger } from './utils/logging'
-import { passportConfig, redisSession } from './middleware'
+import {
+    passportConfig,
+    redisSession,
+    gate,
+    errorHandler,
+    contentType,
+} from './middleware'
 
 morgan.token('id', req => req.ip)
 
@@ -35,7 +40,7 @@ class Server {
                 message: {
                     status: 429,
                     error: 'To many requests',
-                    message: 'To many requests, try again later',
+                    message: 'To many requests, please try again later',
                 },
             })
         )
@@ -75,34 +80,13 @@ class Server {
     private routes() {
         const router = express.Router()
 
+        // Handle bad request payloads etc
+        this.app.use(gate)
+
         this.app.use('/v1', router)
 
         // Only allow specific content types
-        router.use((req, res, next) => {
-            const contentType = req.headers['content-type']
-            if (req.method !== 'GET') {
-                const allowedContentTypes = [
-                    'application/json',
-                    'multipart/form-data',
-                ]
-                const contentTypeMatches = contentType
-                    ? allowedContentTypes.filter(s => contentType.includes(s))
-                    : []
-                if (!contentType || contentTypeMatches.length === 0) {
-                    logger(req.ip, req.statusMessage, req.statusCode)
-
-                    return res.status(406).json({
-                        status: 406,
-                        error: 'Bad Content-Type Header',
-                        message: `This API only accepts ${allowedContentTypes.join(
-                            ', '
-                        )} content types for everything except GET requests.`,
-                    })
-                }
-            }
-
-            return next()
-        })
+        router.use(contentType)
 
         router.get('/health', (_, res) => res.sendStatus(200))
         router.use('/login', controllers.LoginController)
@@ -117,31 +101,7 @@ class Server {
         })
 
         // Catch straggling errors
-        router.use(
-            (
-                err: any,
-                req: express.Request,
-                res: express.Response,
-                next: express.NextFunction
-            ) => {
-                logger(req.ip, req.statusMessage, req.statusCode)
-                if (err && err.message) {
-                    res.status(500).json({
-                        response: {},
-                        message: err.message,
-                    })
-
-                    return next()
-                }
-
-                res.status(404).json({
-                    response: {},
-                    message: 'Not found.',
-                })
-
-                return next()
-            }
-        )
+        this.app.use(errorHandler)
     }
 }
 
