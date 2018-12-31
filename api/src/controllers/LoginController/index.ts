@@ -1,7 +1,6 @@
 import { Router, Response } from 'express'
 
-import Controller from '../Controller'
-import { promisify, filterEntity } from '../../utils'
+import { promisify, filterEntity, escapeString } from '../../utils'
 import { logger } from '../../utils/logging'
 import { verifyPassword } from '../../auth/password'
 import { UserServices } from '../../services/UserServices'
@@ -9,12 +8,10 @@ import * as httpMessages from '../../utils/httpMessages'
 import { validationFunc, validationRules } from './validation'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 
-class LoginController extends Controller {
+class LoginController {
     public router: Router
 
     constructor() {
-        super()
-
         this.router = Router()
         this.routes()
     }
@@ -44,7 +41,7 @@ class LoginController extends Controller {
         const data = {}
         for (const key in req.body) {
             if (req.body.hasOwnProperty(key)) {
-                data[key] = this.escapeString(req.body[key]).trim()
+                data[key] = escapeString(req.body[key])
             }
         }
 

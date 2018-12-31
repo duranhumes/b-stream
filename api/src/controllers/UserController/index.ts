@@ -1,22 +1,19 @@
 import { Router, Response, NextFunction } from 'express'
 
-import Controller from '../Controller'
 import * as httpMessages from '../../utils/httpMessages'
 import { logger } from '../../utils/logging'
 import { UserServices } from '../../services/UserServices'
 import { validationRules, validationFunc } from './validation'
 import seedUsers from '../../database/seeders/seedUsers'
-import { promisify, pick } from '../../utils'
+import { promisify, pick, escapeString } from '../../utils'
 import UserSchema from '../../schemas/UserSchema'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 import { requireLogin, logout } from '../../middleware'
 
-class UserController extends Controller {
+class UserController {
     public router: Router
 
     constructor() {
-        super()
-
         this.router = Router()
         this.routes()
     }
@@ -75,7 +72,7 @@ class UserController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const amountOfUsers = Number(this.escapeString(req.query.amount).trim())
+        const amountOfUsers = Number(escapeString(req.query.amount))
 
         await seedUsers(amountOfUsers)
 
@@ -109,7 +106,7 @@ class UserController extends Controller {
         const data = {}
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
-                data[key] = this.escapeString(filteredData[key]).trim()
+                data[key] = escapeString(filteredData[key])
             }
         }
 
@@ -172,7 +169,7 @@ class UserController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const userId = this.escapeString(req.params.id).trim()
+        const userId = escapeString(req.params.id)
         const [user, userErr] = await promisify(
             UserServices.findOne('id', userId)
         )
@@ -215,7 +212,7 @@ class UserController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const userId = this.escapeString(req.params.id).trim()
+        const userId = escapeString(req.params.id)
 
         // Check if logged in user is the same as requested user
         if (req.user.id !== userId) {
@@ -242,7 +239,7 @@ class UserController extends Controller {
         const newData = {}
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
-                newData[key] = this.escapeString(filteredData[key]).trim()
+                newData[key] = escapeString(filteredData[key])
             }
         }
 
@@ -273,7 +270,7 @@ class UserController extends Controller {
         res: Response,
         next: NextFunction
     ): Promise<any> => {
-        const userId = this.escapeString(req.params.id).trim()
+        const userId = escapeString(req.params.id)
 
         // Check if logged in user is the same as requested user
         if (req.user.id !== userId) {

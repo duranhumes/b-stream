@@ -2,10 +2,9 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { Router, Response } from 'express'
 
-import Controller from '../Controller'
 import * as httpMessages from '../../utils/httpMessages'
 import { validationFunc, validationRules } from './validation'
-import { pick, promisify } from '../../utils'
+import { pick, promisify, escapeString } from '../../utils'
 import TrackSchema from '../../schemas/TrackSchema'
 import { TrackServices } from '../../services/TrackServices'
 import { logger } from '../../utils/logging'
@@ -16,12 +15,10 @@ import { requireLogin } from '../../middleware'
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
 
-class TrackController extends Controller {
+class TrackController {
     public router: Router
 
     constructor() {
-        super()
-
         this.router = Router()
         this.routes()
     }
@@ -59,7 +56,7 @@ class TrackController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const userId = this.escapeString(req.params.id).trim()
+        const userId = escapeString(req.params.id)
         const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [tracks, tracksErr] = await promisify(
             TrackServices.findAll(
@@ -98,7 +95,7 @@ class TrackController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const trackId = this.escapeString(req.params.id).trim()
+        const trackId = escapeString(req.params.id)
         const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', trackId, true, fieldsToRemove)
@@ -122,7 +119,7 @@ class TrackController extends Controller {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const trackId = this.escapeString(req.params.id).trim()
+        const trackId = escapeString(req.params.id)
         const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', trackId)
         )
@@ -181,7 +178,7 @@ class TrackController extends Controller {
         const textFields = { user: req.user.id }
         for (const key in filteredData) {
             if (filteredData.hasOwnProperty(key)) {
-                textFields[key] = this.escapeString(filteredData[key]).trim()
+                textFields[key] = escapeString(filteredData[key])
             }
         }
 

@@ -1,14 +1,11 @@
 import { Router, NextFunction } from 'express'
 
-import Controller from '../Controller'
 import { requireLogin, logout } from '../../middleware'
 
-class LogoutController extends Controller {
+class LogoutController {
     public router: Router
 
     constructor() {
-        super()
-
         this.router = Router()
         this.routes()
     }
