@@ -14,6 +14,7 @@ import { requireLogin } from '../../middleware'
 
 const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
+const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
 
 class TrackController {
     public router: Router
@@ -57,7 +58,6 @@ class TrackController {
         res: Response
     ): Promise<any> => {
         const userId = escapeString(req.params.id)
-        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [tracks, tracksErr] = await promisify(
             TrackServices.findAll(
                 { userId, relations: ['user'] },
@@ -78,7 +78,6 @@ class TrackController {
         req: ExtendedRequest,
         res: Response
     ): Promise<any> => {
-        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [tracks, tracksErr] = await promisify(
             TrackServices.findAll({}, true, fieldsToRemove)
         )
@@ -96,7 +95,6 @@ class TrackController {
         res: Response
     ): Promise<any> => {
         const trackId = escapeString(req.params.id)
-        const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
         const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', trackId, true, fieldsToRemove)
         )
@@ -228,7 +226,6 @@ class TrackController {
             return res.status(500).json(httpMessages.code500())
         }
 
-        const fieldsToRemove = ['fileExt', 'fileName', 'fileSize']
         const [foundTrack, foundTrackErr] = await promisify(
             TrackServices.findOne('id', newTrackId, true, fieldsToRemove)
         )
