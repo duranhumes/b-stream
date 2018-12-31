@@ -103,33 +103,33 @@ export function filterEntity(
 ): object {
     const fieldsToExclude = ['password'].concat(fields)
 
-    function recurse(obj: object = {}) {
-        for (const key in obj) {
-            if (obj[key] && typeof obj[key] === 'object') {
-                Object.assign(obj, {
-                    [key]: filterEntity(obj[key], fieldsToExclude),
-                })
-            }
-        }
-
-        return obj
-    }
-
     /**
      * If entity param is an array of entities loop through
      * and return the new array.
      */
     if (Array.isArray(entity)) {
         return entity.map(e => {
-            Object.assign(e, recurse(e))
+            Object.assign(e, entityRecurse(e, fieldsToExclude))
 
             return reject(e, fieldsToExclude)
         })
     }
 
-    Object.assign(entity, recurse(entity))
+    Object.assign(entity, entityRecurse(entity, fieldsToExclude))
 
     return reject(entity, fieldsToExclude)
+}
+
+function entityRecurse(obj: object = {}, fieldsToExclude: string[]) {
+    for (const key in obj) {
+        if (obj[key] && typeof obj[key] === 'object') {
+            Object.assign(obj, {
+                [key]: filterEntity(obj[key], fieldsToExclude),
+            })
+        }
+    }
+
+    return obj
 }
 
 /**
