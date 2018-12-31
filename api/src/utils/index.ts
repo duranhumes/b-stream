@@ -1,4 +1,5 @@
 import * as uuid from 'uuid/v4'
+import * as escape from 'escape-html'
 
 /**
  * Check if object is plain or has extra properties
@@ -6,7 +7,7 @@ import * as uuid from 'uuid/v4'
  *
  * @param {object} obj
  *
- * @returns {boolean}
+ * @returns boolean
  */
 export function isPlainObject(obj: object) {
     return (
@@ -154,6 +155,24 @@ export function readableBytes(bytes: number): string {
     return `${convertedBytes}${sizes[i]}`
 }
 
+/**
+ * Boils uuid string down to only numbers and letters
+ *
+ * @returns string
+ */
 export function formattedUUID() {
     return uuid().replace(/[^a-z0-9]/gi, '')
+}
+
+/**
+ * Escapes and removed all extra spaces
+ *
+ * @param str string to be escaped
+ *
+ * @returns string
+ */
+export function escapeString(str: string) {
+    return escape(String(str))
+        .replace(/\s+/g, ' ')
+        .trim()
 }
