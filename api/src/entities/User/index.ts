@@ -34,12 +34,11 @@ export class User extends Model {
     public email: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: false })
-    // @Length(8, 30)
     public password: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
-    @IsFQDN()
     @IsOptional()
+    @IsFQDN()
     public website: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
