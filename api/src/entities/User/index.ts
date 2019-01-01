@@ -34,6 +34,7 @@ export class User extends Model {
     public email: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: false })
+    @Length(8, 30)
     public password: string | undefined
 
     @Column({ type: 'varchar', length: 255, nullable: true })
@@ -72,7 +73,11 @@ export class User extends Model {
                     throw new Error('In password hash.')
                 }
 
+                await validateData<User>(this)
+
                 this.password = hashedPassword
+
+                return
             } else {
                 throw new TypeError(passwordValidationMessage)
             }
@@ -92,7 +97,10 @@ export class User extends Model {
         if (this.password) {
             // Skip password hashing as its most likely already hashed
             if (this.password.startsWith('$argon2id')) {
-                await validateData<User>(this)
+                const currentData: Partial<User> = {}
+                Object.assign(currentData, this)
+                delete currentData.password
+                await validateData<User>(currentData)
 
                 return
             }
@@ -105,7 +113,11 @@ export class User extends Model {
                     throw new Error('In password hash.')
                 }
 
+                await validateData<User>(this)
+
                 this.password = hashedPassword
+
+                return
             } else {
                 throw new TypeError(passwordValidationMessage)
             }
