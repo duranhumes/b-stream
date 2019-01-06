@@ -7,7 +7,7 @@ import { User } from '../../entities'
 /**
  * Remove one user in db by id
  *
- * @param {mongoose model} user - instance to be deleted.
+ * @param {entity} user - instance to be deleted.
  *
  * @returns {string}
  */

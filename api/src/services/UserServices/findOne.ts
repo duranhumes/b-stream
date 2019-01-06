@@ -4,7 +4,7 @@ import { isEmpty, promisify, filterEntity } from '../../utils'
 import { getManager } from 'typeorm'
 
 /**
- * Find one user in mongodb by key, value
+ * Find one user in db by key, value
  *
  * return {object} user
  */

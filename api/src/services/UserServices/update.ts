@@ -5,7 +5,7 @@ import { promisify, filterEntity } from '../../utils'
 import { User } from '../../entities'
 
 /**
- * Update user in mongodb
+ * Update user in db
  *
  * @returns {object} updated user
  */
@@ -23,11 +23,9 @@ export const update: UpdateType = async (
 ) => {
     const manager = getManager()
     const tempUser = new User()
-    Object.assign(tempUser, user, {
-        ...data,
-    })
+    Object.assign(tempUser, user, data)
 
-    const [updatedUser, updatedUserErr]: [any, any] = await promisify(
+    const [updatedUser, updatedUserErr] = await promisify(
         manager.save(User, tempUser)
     )
     if (updatedUserErr) {

@@ -45,13 +45,30 @@ export const validationRules = {
             .withMessage('is required for this endpoint'),
     ],
     updateUser: [
-        ...UserSchema.map((field: string) => body(field).escape()),
+        ...UserSchema.map((field: string) =>
+            body(field)
+                .escape()
+                .trim()
+        ),
         param('id')
             .not()
             .isEmpty()
             .trim()
             .escape()
             .withMessage('is required for this endpoint'),
+        body('email')
+            .optional()
+            .trim()
+            .isEmail()
+            .withMessage('is not a valid email address')
+            .escape()
+            .normalizeEmail(),
+        body('password')
+            .optional()
+            .trim()
+            .escape()
+            .matches(passwordRegex)
+            .withMessage(passwordValidationMessage),
     ],
     deleteUser: [
         param('id')

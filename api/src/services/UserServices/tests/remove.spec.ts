@@ -9,8 +9,8 @@ import { promisify } from '../../../utils'
 const expect = chai.expect
 
 describe('=> Remove user service <=', () => {
-    it('=> should remove a user by the given mongoose user obj', async () => {
-        const [userId, userIdErr]: [any, any] = await promisify(
+    it('=> should remove a user by the given user obj', async () => {
+        const [userId, userIdErr] = await promisify(
             create({
                 userName: faker.internet.userName(),
                 email: 'email@email.com',

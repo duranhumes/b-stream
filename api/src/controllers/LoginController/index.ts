@@ -51,7 +51,7 @@ class LoginController {
          * Check if user exists, if not return 404
          * otherwise proceed.
          */
-        const [user, userErr]: [any, any] = await promisify(
+        const [user, userErr] = await promisify(
             UserServices.findOne('email', email.toLowerCase(), false)
         )
         if (userErr) {

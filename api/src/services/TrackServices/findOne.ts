@@ -5,7 +5,7 @@ import { logger } from '../../utils/logging'
 import { isEmpty, promisify, filterEntity } from '../../utils'
 
 /**
- * Find one Track in mongodb by key, value
+ * Find one Track in db by key, value
  *
  * return {object} Track
  */

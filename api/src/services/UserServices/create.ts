@@ -5,7 +5,7 @@ import { logger } from '../../utils/logging'
 import { isEmpty, promisify } from '../../utils'
 
 /**
- * Create a new mongodb user record.
+ * Create a new user record.
  *
  * @returns {string} new user id
  */
@@ -16,7 +16,7 @@ export const create: CreateType = async newUserData => {
     const tempUser = new User()
     Object.assign(tempUser, newUserData)
 
-    const [newUser, newUserErr]: [any, any] = await promisify(
+    const [newUser, newUserErr] = await promisify(
         manager.insert(User, tempUser)
     )
     if (newUserErr) {

@@ -1,10 +1,10 @@
-import * as path from 'path'
+import { normalize, resolve } from 'path'
 import * as shell from 'shelljs'
 
 import { TrackData } from './createTempTrack'
 import { logger } from '../../utils/logging'
 
-const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
+const baseDir = normalize(resolve(__dirname, '..', '..', '..'))
 const tempDir = `${baseDir}/temp`
 const storageDir = `${baseDir}/storage`
 

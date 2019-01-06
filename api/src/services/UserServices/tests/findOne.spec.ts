@@ -23,7 +23,7 @@ describe('=> Find one user service <=', () => {
             email: 'email@email.com',
             password: 'My_passwd@12',
         }
-        const userId = await create(userObj)
+        const [userId] = await promisify(create(userObj))
 
         const [foundUser, foundUserErr] = await promisify(
             findOne('id', userId!)

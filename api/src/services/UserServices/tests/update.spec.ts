@@ -10,7 +10,7 @@ const expect = chai.expect
 
 describe('=> Update user service <=', () => {
     it('=> should update user to db', async () => {
-        const [userId, userIdErr]: [any, any] = await promisify(
+        const [userId, userIdErr] = await promisify(
             create({
                 userName: faker.internet.userName(),
                 email: 'emailzzz@email.com',
@@ -22,12 +22,13 @@ describe('=> Update user service <=', () => {
         const newEmail = 'myEmail@gmail.com'
         const newUserName = 'my-new-username'
 
-        const user: any = await findOne('id', userId, false)
+        const [user, userErr] = await promisify(findOne('id', userId, false))
+        expect(userErr).to.equal(undefined)
 
         user!.email = newEmail
         user!.userName = newUserName
 
-        const [updateUser, updateUserErr]: [any, any] = await promisify(
+        const [updateUser, updateUserErr] = await promisify(
             update(user, { userName: newUserName, email: newEmail })
         )
 

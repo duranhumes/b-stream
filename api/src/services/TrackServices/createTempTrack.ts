@@ -1,10 +1,10 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import { createWriteStream, access, constants } from 'fs'
+import { normalize, resolve } from 'path'
 import { Readable } from 'stream'
 
 import { formattedUUID } from '../../utils'
 
-const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
+const baseDir = normalize(resolve(__dirname, '..', '..', '..'))
 const tempDir = `${baseDir}/temp`
 
 export interface TempTrackData {
@@ -35,7 +35,7 @@ export const createTempTrack = async (
         fileSize: tempTrackData.size,
     }
 
-    const stream = fs.createWriteStream(tempTrackFile)
+    const stream = createWriteStream(tempTrackFile)
     const readable = new Readable()
     readable.push(tempTrackData.data)
     readable.push(null)
@@ -58,7 +58,7 @@ export const createTempTrack = async (
             readable.destroy()
         })
 
-    fs.access(tempTrackFile, fs.constants.F_OK, err => {
+    access(tempTrackFile, constants.F_OK, err => {
         if (err) {
             Promise.reject({
                 code: 404,

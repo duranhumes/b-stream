@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import { readdirSync, unlinkSync, writeFileSync } from 'fs'
+import { normalize, resolve, join } from 'path'
 import {
     createConnection,
     ConnectionOptions,
@@ -12,9 +12,9 @@ import { logger } from './utils/logging'
 const isProduction = process.env.NODE_ENV === 'production'
 const isTesting = process.env.NODE_ENV === 'test'
 const database = isTesting
-    ? String(process.env.MYSQL_DATABASES_TEST)
-    : String(process.env.MYSQL_DATABASES)
-const projectDirBasePath = path.normalize(path.resolve(__dirname, '..'))
+    ? String(process.env.MYSQL_DATABASE_TEST)
+    : String(process.env.MYSQL_DATABASE)
+const projectDirBasePath = normalize(resolve(__dirname, '..'))
 
 class Database {
     connectionOptions: ConnectionOptions
@@ -100,12 +100,14 @@ class Database {
     private async genModelSchemas() {
         const schemasDir = `${projectDirBasePath}/src/schemas`
         try {
-            const files = fs.readdirSync(schemasDir)
+            // Clear dir of old files
+            const files = readdirSync(schemasDir)
             for (const file of files) {
-                const filePath = path.normalize(path.join(schemasDir, file))
-                fs.unlinkSync(filePath)
+                const filePath = normalize(join(schemasDir, file))
+                unlinkSync(filePath)
             }
 
+            // Gen new files
             const entities = this.connection.entityMetadatas
             for (const entity of entities) {
                 const modelSchema = this.connection.getMetadata(entity.name)
@@ -119,7 +121,7 @@ class Database {
                     entity.name.charAt(0).toUpperCase() + entity.name.slice(1)
                 const schemaFile = `${schemasDir}/${fileName}Schema.ts`
                 try {
-                    fs.writeFileSync(schemaFile, template)
+                    writeFileSync(schemaFile, template)
                 } catch (err) {
                     console.error(err)
 

@@ -6,6 +6,9 @@ services:
         restart: unless-stopped
         env_file:
             - ./.env
+        environment:
+            - character-set-server=utf8mb4
+            - collation-server=utf8mb4_col
         volumes:
             - ./data/mysql:/var/lib/mysql
             - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
