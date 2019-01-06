@@ -1,5 +1,5 @@
-import * as fs from 'fs'
-import * as path from 'path'
+import { access, createReadStream, constants } from 'fs'
+import { normalize, resolve } from 'path'
 import { Router, Response } from 'express'
 
 import * as httpMessages from '../../utils/httpMessages'
@@ -12,7 +12,7 @@ import { allowedTrackFileExt } from '../../entities/Track'
 import { ExtendedRequest } from '../../interfaces/ExtendedRequest'
 import { requireLogin } from '../../middleware'
 
-const baseDir = path.normalize(path.resolve(__dirname, '..', '..', '..'))
+const baseDir = normalize(resolve(__dirname, '..', '..', '..'))
 const storageDir = `${baseDir}/storage`
 const fieldsToRemove = ['fileName', 'fileSize', 'fileExt']
 
@@ -135,7 +135,7 @@ class TrackController {
 
         const { name, fileName, fileSize, fileExt } = foundTrack
         const trackFile = `${storageDir}/${fileName}.${fileExt}`
-        fs.access(trackFile, fs.constants.F_OK, err => {
+        access(trackFile, constants.F_OK, err => {
             if (err) {
                 res.writeHead(404, 'Not Found')
 
@@ -147,7 +147,7 @@ class TrackController {
                 'Content-Disposition': `attachment; filename="${name}.${fileExt}"`,
                 'Content-Length': fileSize,
             })
-            const stream = fs.createReadStream(trackFile)
+            const stream = createReadStream(trackFile)
             stream.on('error', error => {
                 logger(`${fileName}.${fileExt} stream error`, error, 404)
                 res.writeHead(404, 'Not Found')

@@ -1,4 +1,4 @@
-import * as path from 'path'
+import { normalize, resolve } from 'path'
 import * as bunyan from 'bunyan'
 import * as RotatingFileStream from 'bunyan-rotating-file-stream'
 
@@ -12,7 +12,7 @@ const logSettings = {
     startNewFile: true,
 }
 
-const projectBaseDir = path.normalize(path.resolve(__dirname, '..', '..'))
+const projectBaseDir = normalize(resolve(__dirname, '..', '..'))
 const date = new Date().toJSON().slice(0, 10)
 const errorStreamerRotatedByLength = {
     type: 'raw',
